@@ -2,7 +2,7 @@ services:
         auth-service:
             container_name: auth-service
             build:
-                context: backend/authentication-service
+                context: services/authentication-service
                 dockerfile: ../../docker/java/Dockerfile
             ports:
                 - "8081:8080"
@@ -34,7 +34,7 @@ services:
         user-service:
             container_name: user-service
             build:
-                context: backend/user-service
+                context: services/user-service
                 dockerfile: ../../docker/java/Dockerfile
             ports:
                 - "8090:8080"
