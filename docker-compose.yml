@@ -1,0 +1,66 @@
+services:
+        auth-service:
+            container_name: auth-service
+            build:
+                context: backend/authentication-service
+                dockerfile: ../../docker/java/Dockerfile
+            ports:
+                - "8081:8080"
+            healthcheck:
+                test: [ "CMD","curl","-f", "http://localhost:8080/health" ]
+                interval: 15s
+                retries: 6
+            environment:
+                - DISCOVERY_SERVICE_URL=http://discovery-service:8080/eureka
+                - CONFIG_SERVICE_URL=http://config-service:8080
+            depends_on:
+                -   auth-db
+
+        auth-db:
+            container_name: auth-db
+            image: mysql:8.0
+            volumes:
+                - ./storage/auth-db:/var/lib/mysql
+            restart: always
+            environment:
+                MYSQL_PASSWORD: root
+                MYSQL_USER: mysql
+                MYSQL_DATABASE: auth_db
+                MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            ports:
+                - "3308:3306"
+
+
+        user-service:
+            container_name: user-service
+            build:
+                context: backend/user-service
+                dockerfile: ../../docker/java/Dockerfile
+            ports:
+                - "8090:8080"
+            healthcheck:
+                test: [ "CMD","curl","-f", "http://localhost:8080/health" ]
+                interval: 15s
+                retries: 6
+            environment:
+                - DISCOVERY_SERVICE_URL=http://discovery-service:8080/eureka
+                - CONFIG_SERVICE_URL=http://config-service:8080
+#            depends_on:
+#                config-service:
+#                    condition: service_healthy
+#                user-db:
+#                    condition: service_started
+
+        user-db:
+            container_name: user-db
+            image: mysql:8.0
+            volumes:
+                - ./storage/user-db:/var/lib/mysql
+            restart: always
+            environment:
+                MYSQL_PASSWORD: root
+                MYSQL_USER: mysql
+                MYSQL_DATABASE: user_service_db
+                MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            ports:
+                - "3307:3306"
