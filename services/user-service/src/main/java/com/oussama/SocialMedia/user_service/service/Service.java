@@ -47,7 +47,6 @@ public class Service implements ServiceInterface {
         newUser.setId(oldUser.getId());
         newUser.setCreatedAt(oldUser.getCreatedAt());
         repository.save(newUser);
-        //repository.updateByUsername(userRequestDTO.getUsername(),newUser);
         return mapper.UserToUserResponseDTO(newUser);
     }
 

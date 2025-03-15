@@ -23,10 +23,10 @@ public class Controller {
         return new ResponseEntity<>(users,HttpStatusCode.valueOf(200));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable("id") Long id) {
+    @GetMapping("/{username}")
+    public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(
-                userService.getUserById(id)
+                userService.getUserByUsername(username)
         );
     }
 
