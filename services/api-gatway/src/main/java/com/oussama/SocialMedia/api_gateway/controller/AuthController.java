@@ -24,7 +24,7 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
 
         User user  = authService.authenticate(loginRequestDto.getUsername(), loginRequestDto.getPassword());
-        String token = jwtService.generateToken(user).block();
+        String token = jwtService.generateToken(user);
         LoginResponseDto loginResponseDto = LoginResponseDto
                 .builder()
                 .token(token)
