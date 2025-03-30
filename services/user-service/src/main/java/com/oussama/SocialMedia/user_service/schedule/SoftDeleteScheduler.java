@@ -16,7 +16,7 @@ public class SoftDeleteScheduler {
 
     private final Service userService;
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(cron="0 0 0 30 * ?")
     public void softDelete() {
        userService.hardDeleteUsers();
     }

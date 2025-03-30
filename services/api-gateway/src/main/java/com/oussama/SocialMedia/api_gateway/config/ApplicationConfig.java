@@ -50,11 +50,11 @@ public class ApplicationConfig {
         return authProvider;
     }
 
-    @Bean
-    public RouterFunction<ServerResponse> routes() {
-        return route()
-                .route("users",r->r.
-                )
-                .build();
-    }
+//    @Bean
+//    public RouterFunction<ServerResponse> routes() {
+//        return route()
+//               // .GET("/api/v1/users/**",http("http://localhost:8090"))
+//
+//                .build();
+//    }
 }

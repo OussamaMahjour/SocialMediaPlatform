@@ -27,6 +27,7 @@ public class AuthController {
                 .token(token)
                 .expiresIn(System.currentTimeMillis()+jwtService.getExpirationTime())
                 .build();
+
         return ResponseEntity.ok(loginResponseDto);
 
     }
