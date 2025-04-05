@@ -15,19 +15,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-
 @Service
 public class JwtService {
 
     @Value(value = "${jwt.secretKey}")
-    private  String secretKey ;
+    private String secretKey;
     @Value(value = "${jwt.expiration}")
-    private  Long jwtExpiration ;
+    private Long jwtExpiration;
 
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<String, Object>(), userDetails);
     }
-    public String generateToken(Map<String,Object> claims,UserDetails userDetails) {
+
+    public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
 
         return Jwts
                 .builder()
@@ -43,15 +43,13 @@ public class JwtService {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-
-    public <T> T getClaimFromToken(String token, Function<Claims,T> claimsResolver) {
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
     public Claims getClaimsFromToken(String token) {
-        return Jwts.
-                parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
@@ -60,7 +58,7 @@ public class JwtService {
 
     public boolean isTokenExpired(String token) {
 
-        return getClaimFromToken(token,Claims::getExpiration).before(new Date());
+        return getClaimFromToken(token, Claims::getExpiration).before(new Date());
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -75,4 +73,5 @@ public class JwtService {
     public Long getExpirationTime() {
         return System.currentTimeMillis() + jwtExpiration;
     }
+
 }
