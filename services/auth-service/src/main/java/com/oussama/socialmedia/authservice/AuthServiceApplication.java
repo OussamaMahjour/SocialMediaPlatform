@@ -1,17 +1,17 @@
-package com.oussama.socialmedia.config;
+package com.oussama.socialmedia.authservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.config.server.EnableConfigServer;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableConfigServer
 @EnableDiscoveryClient
-public class ConfigServiceApplication {
+@EnableFeignClients
+public class AuthServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ConfigServiceApplication.class, args);
+		SpringApplication.run(AuthServiceApplication.class, args);
 	}
 
 }
