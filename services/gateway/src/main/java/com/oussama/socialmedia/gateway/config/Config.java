@@ -22,6 +22,10 @@ public class Config {
                 .route("auth-service",r -> r.path("/api/v1/auth/**")
                         .uri("lb://auth-service")
                 )
+                .route("media-service",r -> r.path("/api/v1/media/**")
+                        .filters(f->f.filter(filter))
+                        .uri("lb://media-service")
+                )
                 .build();
     }
 
