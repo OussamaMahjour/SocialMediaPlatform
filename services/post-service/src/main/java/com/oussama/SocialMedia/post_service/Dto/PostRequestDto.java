@@ -1,4 +1,4 @@
-package com.oussama.SocialMedia.post_service.DTO;
+package com.oussama.SocialMedia.post_service.Dto;
 
 
 import lombok.Builder;

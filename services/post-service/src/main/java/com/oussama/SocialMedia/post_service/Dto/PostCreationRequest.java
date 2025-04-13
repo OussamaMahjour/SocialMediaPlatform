@@ -1,19 +1,19 @@
-package com.oussama.SocialMedia.post_service.DTO;
+package com.oussama.SocialMedia.post_service.Dto;
 
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.transform.stream.StreamSource;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
 @Getter
 @Setter
-public class PostCreationRequestDTO {
-    private String title;
+@ToString
+public class PostCreationRequest {
+    private String caption;
     private String username;
-    private List<MultipartFile> medias;
+    private List<MultipartFile> media;
 }
