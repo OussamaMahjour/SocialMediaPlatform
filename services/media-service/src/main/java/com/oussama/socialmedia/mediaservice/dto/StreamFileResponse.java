@@ -4,12 +4,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.InputStream;
 
+
+/**
+ *
+ *
+ * */
 @Builder
 @Getter
 @Setter
-public class MediaStreamResponse {
+public class StreamFileResponse {
     private String id;
     private String context;
     private long size;

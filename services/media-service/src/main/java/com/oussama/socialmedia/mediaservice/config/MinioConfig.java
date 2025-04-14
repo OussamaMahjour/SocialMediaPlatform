@@ -33,7 +33,6 @@ public class MinioConfig {
                             .build()
             );
         }
-
         return client;
 
     }

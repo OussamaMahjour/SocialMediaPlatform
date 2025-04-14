@@ -16,6 +16,4 @@ public class Media {
     String context;
     String httpContentType;
     long size;
-    String path;
-
 }

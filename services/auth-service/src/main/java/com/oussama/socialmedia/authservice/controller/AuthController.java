@@ -35,13 +35,11 @@ public class AuthController {
     }
     @PostMapping("/signup")
     public ResponseEntity<User> signup(@RequestBody  RegisterUserDto registerUserDto) {
-
         User user = authService.signUp(registerUserDto);
-
         return ResponseEntity.ok(user);
-
-
     }
+
+
     @DeleteMapping("/{username}")
     public ResponseEntity<Void> deleteUser(@PathVariable String username) {
         authService.deleteUser(username);

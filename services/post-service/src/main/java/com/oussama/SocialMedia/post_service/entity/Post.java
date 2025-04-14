@@ -18,7 +18,7 @@ public class Post {
     String id;
     String caption;
     String owner;
-    Integer likes;
+    Integer reactions;
     String[] media;
     @CreatedDate
     LocalDateTime createdAt;

@@ -5,7 +5,7 @@ import com.oussama.socialmedia.mediaservice.dto.StreamFileResponse;
 import com.oussama.socialmedia.mediaservice.entity.Range;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface MediaServiceInterface {
+public interface MediaService {
     String saveMedia(String context, MultipartFile multipartFile);
     StaticFileResponse getStaticMedia(String mediaId);
     void DeleteMediaById(String id);
