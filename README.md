@@ -79,12 +79,7 @@ Access OpenAPI specs at:
     - Integration testing
     - Kubernetes deployment (WIP)
 
-## 🚧 Development Status
-```plaintext
-✅ Completed Services: 7/9
-🛠 In Progress: Message & Notification Services
-🔜 Planned: Grafana monitoring, AWS deployment
-```
+  
 
 ## 🤝 Contributing
 This educational project welcomes:
@@ -100,7 +95,7 @@ This educational project welcomes:
 ## 📄 License
 Distributed under MIT License - see [LICENSE](LICENSE) for details.
 
-## 🔜 Roadmap
+## 🚧 Development Status
 - [X] User Service Core implementation 
 - [X] authentication service with Jwt 
 - [X] Discovery and config services
