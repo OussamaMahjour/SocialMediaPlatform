@@ -10,18 +10,18 @@
 ## 📌 Overview
 
 A learning-focused implementation featuring:
-- JWT-based authentication & TLS-secured internal communication
+- JWT-based authentication 
 - Event-driven architecture with Kafka
-- Containerized services using Docker
+- Containerized services and orchestration  using Docker and kubernetes
 - CI/CD pipeline with Jenkins
 
-![Architecture Diagram]([INSERT_YOUR_ARCHITECTURE_IMAGE_URL_HERE])
+![Architecture Diagram]([Diagrame.png])
 
 ## 🛠️ Core Services
 
 **Implemented:**
 - **User Service**: Account management & profiles
-- **Auth Service**: JWT token generation/validation
+- **Auth Service**: Users Registration and JWT token generation
 - **Post Service**: Content creation & management
 - **Config Service**: Centralized configuration
 - **Discovery Service**: Service registration
@@ -29,8 +29,8 @@ A learning-focused implementation featuring:
 - **Media Service**: File storage (MinIO)
 
 **In Development:**
-- Message Service (direct messaging)
-- Notification Service (real-time alerts)
+- **Message Service** (direct messaging)
+- **Notification Service** (real-time alerts and notification )
 
 ## 🔧 Tech Stack
 
@@ -48,7 +48,6 @@ A learning-focused implementation featuring:
 **Communication:**
 - HTTP/REST for external APIs
 - Kafka for event streaming
-- TLS for inter-service security
 
 ## 🚀 Getting Started
 
@@ -70,7 +69,7 @@ kubectl apply -f .
 
 ## 📚 API Documentation
 Access OpenAPI specs at:
-- `http://localhost:[GATEWAY_PORT]/swagger-ui.html` (after startup)
+- `http://localhost:8080/swagger-ui.html` (after startup)
 
 ## 🔄 CI/CD Pipeline
 - Jenkins automation for:
@@ -100,10 +99,11 @@ This educational project welcomes:
 Distributed under MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🔜 Roadmap
+- [X] user and authentication services
+- [X] gateway,discovery and config services
+- [ ] A UI with react
 - [ ] Grafana dashboard integration
 - [ ] AWS EC2 deployment guide
-- [ ] End-to-end encryption for messages
-- [ ] Load testing results
 
 
 
