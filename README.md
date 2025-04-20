@@ -11,9 +11,11 @@
 
 A learning-focused implementation featuring:
 - JWT-based authentication 
+- Caching with Redis
+- Microservices cloud  architecture 
 - Event-driven architecture with Kafka
 - Containerized services and orchestration  using Docker and kubernetes
-- CI/CD pipeline with Jenkins
+- CI/CD pipelines with Jenkins
 
 ![Architecture Diagram](Diagram.png)
 
@@ -69,7 +71,7 @@ kubectl apply -f .
 
 ## 📚 API Documentation
 Access OpenAPI specs at:
-- `http://localhost:8080/swagger-ui.html` (after startup)
+- `http://localhost:8080/{service-name}/swagger-ui.html` (after startup)
 
 ## 🔄 CI/CD Pipeline
 - Jenkins automation for:
@@ -99,10 +101,18 @@ This educational project welcomes:
 Distributed under MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🔜 Roadmap
-- [X] user and authentication services
-- [X] gateway,discovery and config services
-- [ ] A UI with react
+- [X] User Service Core implementation 
+- [X] authentication service with Jwt 
+- [X] Discovery and config services
+- [X] Gateway with Jwt validation 
+- [X] media service with file streaming 
+- [X] Post Service Core Implementation
+- [ ] Message Service with websockets and kafka streaming
+- [ ] Notification Service with websockets and kafka streaming
+- [ ] Cache implementation for user and post services
+- [ ] Kubernetes full configuration
 - [ ] Grafana dashboard integration
+- [ ] A UI with react
 - [ ] AWS EC2 deployment guide
 
 
