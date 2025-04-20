@@ -107,6 +107,7 @@ Distributed under MIT License - see [LICENSE](LICENSE) for details.
 - [ ] Cache implementation for user and post services
 - [ ] Kubernetes full configuration
 - [ ] Grafana dashboard integration
+- [ ] Implementing circuit breaker with Resilience4j
 - [ ] A UI with react
 - [ ] AWS EC2 deployment guide
 
