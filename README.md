@@ -15,7 +15,7 @@ A learning-focused implementation featuring:
 - Containerized services and orchestration  using Docker and kubernetes
 - CI/CD pipeline with Jenkins
 
-![Architecture Diagram](Diagrame.png)
+![Architecture Diagram](Diagram.png)
 
 ## 🛠️ Core Services
 
