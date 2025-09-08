@@ -21,19 +21,39 @@ public class JWTAuthenticationFilter implements GatewayFilter {
     private Utils utils;
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
         ServerHttpRequest request = exchange.getRequest();
         final List<String> apiEndpoints = List.of("/api/v1/auth/login", "/api/v1/auth/register","/eureka");
 
         Predicate<ServerHttpRequest> isApiSecured = r -> apiEndpoints.stream().noneMatch(uri -> r.getURI().getPath().contains(uri));
-
+        if (request.getMethod().name().equals("OPTIONS")) {
+            return chain.filter(exchange);
+        }
         if(isApiSecured.test(request)) {
             String Authorization = request.getHeaders().getFirst("Authorization");
+
             if(Authorization != null && Authorization.startsWith("Bearer ")) {
                 String token = Authorization.substring(7);
 
                     if(utils.isTokenValid(token)){
-                        return chain.filter(exchange);
+                        String username = utils.getUserNameFromToken(token);
+                        ServerHttpRequest mutatedRequest = exchange.getRequest()
+                                .mutate()
+                                .header("username", username)
+                                .build();
+
+                        ServerWebExchange mutatedExchange = exchange.mutate()
+                                .request(mutatedRequest)
+                                .build();
+
+                        return chain.filter(mutatedExchange);
                     }
+            }
+            if(Authorization == null && request.getURI().getQuery()!=null && request.getURI().getQuery().contains("token=")){
+                String token = request.getURI().getQuery().split("token=")[1];
+                if(utils.isTokenValid(token)){
+                    return chain.filter(exchange);
+                }
             }
         }
         ServerHttpResponse response = exchange.getResponse();

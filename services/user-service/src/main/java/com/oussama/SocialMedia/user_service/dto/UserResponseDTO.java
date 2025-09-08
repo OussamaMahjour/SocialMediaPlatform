@@ -20,7 +20,7 @@ public class UserResponseDTO
         private String about;
         private Long phone;
         private String email;
-        private URL profilePicture;
+        private String profilePictureId;
         private Gender gender;
         private LocalDate birthday;
 

@@ -18,20 +18,18 @@ public class UserRequestDTO {
 
 
     private String username;
-
+    @Nullable
     private String firstname;
-
+    @Nullable
     private String lastname;
-
+    @Nullable
     private String about;
-
+    @Nullable
     private Long phone;
-
+    @Nullable
     private String email;
-
-
+    @Nullable
     private Gender gender;
-
-   
+    @Nullable
     private LocalDate birthday;
 }

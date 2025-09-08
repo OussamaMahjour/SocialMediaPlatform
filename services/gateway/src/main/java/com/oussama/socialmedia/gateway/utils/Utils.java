@@ -32,16 +32,23 @@ public class Utils {
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token);
-        }catch(
-    SignatureException e){
-        return false;
-    }
-        return !isTokenExpired(token);
+        }catch(Exception e){
+                e.printStackTrace();
+                return false;
+            }
+                return !isTokenExpired(token);
     }
 
     public Key getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
+
+
+    public String getUserNameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getClaimsFromToken(token);

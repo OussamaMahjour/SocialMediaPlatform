@@ -7,6 +7,7 @@ import com.oussama.socialmedia.authservice.Dto.RegisterUserDto;
 import com.oussama.socialmedia.authservice.entity.User;
 import com.oussama.socialmedia.authservice.service.AuthService;
 import com.oussama.socialmedia.authservice.service.JwtService;
+import jakarta.ws.rs.FormParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +20,13 @@ public class AuthController {
     private final AuthService authService;
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-        System.out.println("test1");
         User user  = authService.authenticate(loginRequestDto.getUsername(), loginRequestDto.getPassword());
-
         String token = jwtService.generateToken(user);
-
         LoginResponseDto loginResponseDto = LoginResponseDto
                 .builder()
                 .token(token)
                 .expiresIn(System.currentTimeMillis()+jwtService.getExpirationTime())
+
                 .build();
 
         return ResponseEntity.ok(loginResponseDto);
@@ -45,6 +44,10 @@ public class AuthController {
         authService.deleteUser(username);
         return ResponseEntity.noContent().build();
     }
+
+
+
+
 
 
 }

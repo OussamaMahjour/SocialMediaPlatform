@@ -7,18 +7,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface Repository extends JpaRepository<User, Long> {
-    public User findUserByEmail(String email);
-    public User findUserByUsername(String username);
+    User findUserByEmail(String email);
+    User findUserByUsername(String username);
 
 
-    @Query(value = "SELECT u FROM User u WHERE u.scheduledToBeDeletedAt < NOW()")
-    public List<User> findAllUserScheduledToBeDeleted();
+    @Query("SELECT u FROM User u WHERE u.deleted = true AND u.deletedAt <= :cutoff")
+    List<User> findExpiredDeletions(@Param("cutoff") LocalDateTime cutoff);
 
     @Modifying
     @Query(value = "UPDATE User u SET u.username=:username  WHERE u.email = :email")
     @Transactional
-    public User updateUsernameByEmail(@Param("status") String username,@Param("email") String email);
+    User updateUsernameByEmail(@Param("status") String username,@Param("email") String email);
 }

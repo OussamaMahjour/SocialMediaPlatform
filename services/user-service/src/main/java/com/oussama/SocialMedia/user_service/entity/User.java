@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -34,7 +32,7 @@ public class User {
     private Long phone;
     @NonNull
     private String email;
-    private URL profilePicture;
+    private String profilePictureId; // The id of the profile picture in the media service
     @NonNull
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -47,7 +45,10 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(name = "scheduled_to_be_deleted_at")
-    private LocalDateTime scheduledToBeDeletedAt;
+    private boolean deleted = false;
+    private LocalDateTime deletedAt;
+
+    @Version
+    private Long version = 0L;
 
 }

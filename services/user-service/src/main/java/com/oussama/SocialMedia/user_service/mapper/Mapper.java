@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 public class Mapper implements MapperInterface{
     @Override
     public User UserRequestDTOToUser(UserRequestDTO userRequestDTO) {
-        if(userRequestDTO==null) {
-            return null;
-        }
         return  User.builder()
                 .username(userRequestDTO.getUsername())
                 .firstname(userRequestDTO.getFirstname())
@@ -39,7 +36,7 @@ public class Mapper implements MapperInterface{
                     .gender(user.getGender())
                     .birthday(user.getBirthday())
                     .phone(user.getPhone())
-                    .profilePicture(user.getProfilePicture())
+                    .profilePictureId(user.getProfilePictureId())
                     .build();
 
 

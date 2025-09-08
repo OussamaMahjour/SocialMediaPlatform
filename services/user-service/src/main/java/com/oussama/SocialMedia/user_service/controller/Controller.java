@@ -1,6 +1,7 @@
 package com.oussama.SocialMedia.user_service.controller;
 
 
+import com.oussama.SocialMedia.user_service.dto.FileRequestDTO;
 import com.oussama.SocialMedia.user_service.dto.UserRequestDTO;
 import com.oussama.SocialMedia.user_service.dto.UserResponseDTO;
 import com.oussama.SocialMedia.user_service.service.ServiceInterface;
@@ -18,10 +19,9 @@ import java.util.List;
 public class Controller {
     private ServiceInterface userService;
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<UserResponseDTO> users = userService.getAllUsers();
-        return new ResponseEntity<>(users,HttpStatusCode.valueOf(200));
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{username}")
@@ -33,10 +33,8 @@ public class Controller {
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
-
         return ResponseEntity.ok(
-                userService.createUser(userRequestDTO)
-        );
+                userService.createUser(userRequestDTO));
     }
 
     @PutMapping
@@ -49,9 +47,25 @@ public class Controller {
 
     @DeleteMapping
     public ResponseEntity deleteUser(@RequestBody UserRequestDTO userRequestDTO) {
-        userService.softDeleteUser(userRequestDTO);
+        userService.softDeleteUser(userRequestDTO.getUsername());
 
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * Endpoint for getting the user using the jwt payload
+     * */
+    @GetMapping
+    public ResponseEntity<UserResponseDTO> getUserFromHeader(@RequestHeader("username") String username) {
+        return ResponseEntity.ok(
+                userService.getUserByUsername(username)
+        );
+    }
+
+    @PutMapping("/{username}/profile")
+    public ResponseEntity<UserResponseDTO> updateProfilePicture(@PathVariable String username , @ModelAttribute FileRequestDTO fileRequestDto){
+        return ResponseEntity.ok(userService.updateProfilePicture(username,fileRequestDto.getMedias()));
+    }
+
 
 }

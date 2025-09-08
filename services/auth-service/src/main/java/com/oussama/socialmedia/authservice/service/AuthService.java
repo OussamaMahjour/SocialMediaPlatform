@@ -5,6 +5,7 @@ import com.oussama.socialmedia.authservice.Dto.LoginRequestDto;
 import com.oussama.socialmedia.authservice.Dto.RegisterUserDto;
 import com.oussama.socialmedia.authservice.client.UserClient;
 import com.oussama.socialmedia.authservice.entity.User;
+import com.oussama.socialmedia.authservice.exception.InvalidCredentialException;
 import com.oussama.socialmedia.authservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +39,7 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(String username) {
         userRepository.deleteUserByUsername(username);
     }
