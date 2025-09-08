@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final JwtService jwtService;
     private final AuthService authService;
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         User user  = authService.authenticate(loginRequestDto.getUsername(), loginRequestDto.getPassword());
@@ -26,7 +27,6 @@ public class AuthController {
                 .builder()
                 .token(token)
                 .expiresIn(System.currentTimeMillis()+jwtService.getExpirationTime())
-
                 .build();
 
         return ResponseEntity.ok(loginResponseDto);

@@ -13,16 +13,7 @@ import java.time.LocalDate;
 @ToString
 public class RegisterUserDto {
     private String username;
-    private String firstname;
-    private String lastname;
     private String password;
-    @Nullable
-    private String about;
-    @Nullable
     private Long phone;
     private String email;
-    @Nullable
-    private URL profilePicture;
-    private String gender;
-    private LocalDate birthday;
 }

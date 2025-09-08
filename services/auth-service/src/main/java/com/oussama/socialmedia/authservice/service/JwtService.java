@@ -17,15 +17,32 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
+    // Secret key used to sign JWT tokens
     @Value(value = "${jwt.secretKey}")
     private String secretKey;
+
+    // Expiration time (in ms) for JWT tokens
     @Value(value = "${jwt.expiration}")
     private Long jwtExpiration;
 
+    /**
+     * Generates a JWT token with no additional claims.
+     *
+     * @param userDetails authenticated user
+     * @return signed JWT token
+     */
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<String, Object>(), userDetails);
     }
 
+
+    /**
+     * Generates a JWT token with custom claims.
+     *
+     * @param claims additional claims to include in the token
+     * @param userDetails authenticated user
+     * @return signed JWT token
+     */
     public String generateToken(Map<String, Object> claims, UserDetails userDetails) {
 
         return Jwts
@@ -51,7 +68,7 @@ public class JwtService {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
+                .parseClaimsJws(token)// parses and validates signature
                 .getBody();
     }
 
@@ -60,13 +77,22 @@ public class JwtService {
         return getClaimFromToken(token, Claims::getExpiration).before(new Date());
     }
 
+    /**
+     * Validates a token by checking:
+     * - The username in the token matches the authenticated user
+     * - The token is not expired
+     *
+     * @param token JWT token
+     * @param userDetails authenticated user
+     * @return true if valid, false otherwise
+     */
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getClaimsFromToken(token).getSubject();
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
     public Key getSigningKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));//Builds the signing key from the secret key.
     }
 
     public Long getExpirationTime() {

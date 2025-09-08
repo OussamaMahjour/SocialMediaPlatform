@@ -59,9 +59,28 @@ function Discussion({conversation,user}:Props):ReactElement{
                     </div>
                 </div>:
                 <div className="transition-normal duration-0 hover:[&_p]:visible w-full flex justify-start items-center gap-4 d-none">
-                    <h1 tabIndex={-1} ref={index === conversation.messages.length - 1 ? lastMessageRef : null} className="p-3 rounded-lg bg-accent-light text-text-light dark:bg-accent-dark dark:text-text-dark ">
-                        {e.body}
-                    </h1>
+                    
+                    <div className="max-w-1/2  overflow-hidden rounded bg-accent-light text-text-light dark:bg-accent-dark dark:text-text-dark  p-1">
+                    {
+                        e.type==MessageType.TEXT?
+                        <p tabIndex={-1} ref={index === conversation.messages.length - 1 ? lastMessageRef : null} className="p-1 w-full max-w-full  rounded-lg   text-text-light  dark:text-text-dark  ">
+                            {e.body}
+                        </p>:
+                        e.type==MessageType.IMAGE?
+                        <img className="max-h-70" src={`http://localhost:8080/api/v1/media/${e.body}`}></img>
+                        :e.type == MessageType.VIDEO?
+                        <ReactPlayer
+                            width="100%"
+                            className="w-full"
+                            url={`http://localhost:8080/api/v1/media/${e.body}`}
+                            controls
+                            playing={false}
+                            />
+                        :e.type == MessageType.AUDIO?
+                        <audio controls src={`http://localhost:8080/api/v1/media/${e.body}`}></audio>
+                        :<></>
+                    }
+                    </div>
                     <p className="text-sm  text-secondary-light dark:text-accent-light invisible transition-normal duration-0">
                         {e.sentAt.toLocaleTimeString('en-US', {
                         hour: 'numeric',
