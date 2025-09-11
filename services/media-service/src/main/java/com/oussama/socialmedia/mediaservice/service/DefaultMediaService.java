@@ -103,6 +103,15 @@ public class DefaultMediaService implements MediaService {
             return !media.getHttpContentType().startsWith("image");
     }
 
+
+    /**
+     * Fetch a chunk of a media file for streaming.
+     * Supports HTTP range requests (video/audio seeking).
+     *
+     * @param mediaId ID of the media
+     * @param range   byte range to fetch
+     * @return StreamFileResponse with chunk bytes
+     */
     @Override
     public StreamFileResponse fetchChunk(String mediaId, Range range){
         Media  media = mediaRepository.findById(mediaId).orElse(null);
@@ -114,7 +123,7 @@ public class DefaultMediaService implements MediaService {
                 return StreamFileResponse.builder()
                         .size(media.getSize())
                         .httpContentType(media.getHttpContentType())
-                        .chunk(inputStream.readAllBytes())
+                        .chunk(inputStream.readAllBytes())// actual bytes of this chunk
                         .build();
         }catch (Exception exception) {
             log.error("Exception occurred when trying to read file with ID = {}", mediaId);

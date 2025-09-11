@@ -217,7 +217,7 @@ function Chat():ReactElement | null{
           
         <div className="h-full max-w-100 w-1/3 border-r dark:border-border-dark border-border-light flex-col flex ">
             <div className="h-20 border-b   dark:border-border-dark border-border-light  w-full flex px-4 py-3 gap-2 ">
-                <img src={"http://localhost:8080/api/v1/media/"+user.profilePicture} className="h-full aspect-square rounded-full cursor-pointer" onClick={openSetting}/>
+                <img src={"http://localhost:8080/api/v1/media/"+user.profilePictureId} className="h-full aspect-square rounded-full cursor-pointer" onClick={openSetting}/>
                 <h1 className="h-full w-5/7 text-center flex items-center font-bold text-xl dark:text-text-dark text-text-light">
                     Chats
                 </h1>

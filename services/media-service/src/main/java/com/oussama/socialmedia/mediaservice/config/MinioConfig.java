@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MinioConfig {
 
-    public static final String BUCKET_NAME = "media";
+
+    @Value("${minio.backetName}")
+    public static String BUCKET_NAME = "media" ;
 
     @Value("${minio.url}")
     private String url;

@@ -25,7 +25,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 public class MediaController {
     @Autowired
     private MediaService mediaService;
-
+    // Default chunk size for streaming (in bytes),
     @Value("${media.streaming.default-chunk-size}")
     public Integer defaultChunkSize;
 
@@ -43,7 +43,15 @@ public class MediaController {
             return ResponseEntity.ok(MediaIds);
     }
 
-
+    /**
+     * Fetch a media file by ID.
+     * - If the file is NOT streamable (e.g., image, PDF), return it as a static download.
+     * - If the file IS streamable (e.g., video, audio), support HTTP Range requests to enable chunked streaming .
+     *
+     * @param id      the media file ID
+     * @param request HttpServletRequest to extract Range headers
+     * @return File as static resource or streamed chunk
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Object> getMedia(@PathVariable String id, HttpServletRequest request) {
         try {

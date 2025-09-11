@@ -5,7 +5,7 @@ type User={
     about?:string;
     phone?:number;
     email?:string;
-    profilePicture?:string;
+    profilePictureId?:string;
     gender?:Gender;
     birthday?:Date;
     createdAt?:Date;
