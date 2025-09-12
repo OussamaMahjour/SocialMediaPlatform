@@ -16,10 +16,10 @@ function Account({isActive,contact,lastMessage,lastMessageTime,nbrOfUnSeenMessag
     return <div className={`w-full h-20 p-4    rounded hover:bg-accent-light hover:dark:bg-accent-dark cursor-pointer flex items-center gap-2 ${isActive?"dark:bg-accent-dark bg-accent-light":""}`}
             onClick={()=>setCurrentContact(contact)}
     >
-        <img className="h-full aspect-square rounded-full " src={contact.profile}></img>
+        <img className="h-full aspect-square rounded-full " src={contact.profileId}></img>
         <div className="h-full w-7/10 ">
                 <div className="flex justify-between items-center h-1/2">
-                    <h1 className="h-full text-center  text-text-light dark:text-text-dark ">{contact.name}</h1>
+                    <h1 className="h-full text-center  text-text-light dark:text-text-dark ">{contact.username}</h1>
                     <h1 className="h-full text-center text-sm text-secondary-light">
                         {
                         lastMessageTime?.toLocaleTimeString('en-US', {
@@ -28,20 +28,20 @@ function Account({isActive,contact,lastMessage,lastMessageTime,nbrOfUnSeenMessag
                         hour12: true,
                         })}</h1>
                 </div>
-                <p className="text-sm text-secondary-light  max-h-1/2 line-clamp-1">
+                <span className="text-sm text-secondary-light  max-h-1/2 line-clamp-1">
                 {lastMessage.type==MessageType.TEXT?
                 lastMessage.body
                 :lastMessage.type==MessageType.AUDIO?
-                <div className="flex gap-2 items-center"><i className="fa-solid fa-headphones"></i><h1>audio</h1></div>
+                <span className="flex gap-2 items-center"><i className="fa-solid fa-headphones"></i><h1>audio</h1></span>
                 :lastMessage.type==MessageType.VIDEO?
-                <div className="flex gap-2 items-center"><i className="fa-solid fa-film"></i><h1>video</h1></div>
+                <span className="flex gap-2 items-center"><i className="fa-solid fa-film"></i><h1>video</h1></span>
                 :lastMessage.type==MessageType.IMAGE?
-                <div className="flex gap-2 items-center"><i className="fa-solid fa-image"></i><h1>image</h1></div>
+                <span className="flex gap-2 items-center"><i className="fa-solid fa-image"></i><h1>image</h1></span>
                 :lastMessage.type==MessageType.DOCUMENT?
-                <div className="flex gap-2 items-center"><i className="fa-solid fa-file"></i><h1>document</h1></div>:
+                <span className="flex gap-2 items-center"><i className="fa-solid fa-file"></i><h1>document</h1></span>:
                 <></>
                 }
-                </p>
+                </span>
         </div>
         {
             nbrOfUnSeenMessages!=0?

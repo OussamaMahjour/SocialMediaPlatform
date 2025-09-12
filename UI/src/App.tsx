@@ -2,12 +2,14 @@ import { ReactElement} from "react";
 import Chat from "./Pages/Chat/Chat";
 import { createBrowserRouter, RouterProvider} from "react-router-dom";
 import Login from "./Pages/Login/Login";
-
 import SignUp from "./Pages/SignUp/SignUp";
 import { PrivateRoute } from "./provider/PrivateRoute";
 import Home from "./Pages/Home/home";
 import PublicRoute from "./provider/PublicRoute";
 import Test from "./Pages/Test";
+import NavBar from "./components/NavBar";
+
+
 
 
 
@@ -34,7 +36,9 @@ function  App():ReactElement {
         },
         {
             path:"/chat",
-            element:<PrivateRoute><Chat /></PrivateRoute>
+            element:<PrivateRoute>   
+                       <Chat />                 
+                </PrivateRoute>
         }
         
 
@@ -58,10 +62,10 @@ function  App():ReactElement {
    
     return <> 
     
-            <div className={`h-screen w-screen relative p-4 bg-primary-light dark:bg-primary-dark *:transition *:duration-300 *:ease-in-out  flex justify-center items-center` }>    
-                
+            <div className={`h-screen w-screen relative  bg-primary-light dark:bg-primary-dark *:transition *:duration-300 *:ease-in-out  flex flex-col justify-center items-center` }>    
+                    
                     <RouterProvider router={router} />
-            
+
             </div> 
         
     </>

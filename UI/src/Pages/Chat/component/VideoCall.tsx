@@ -1,128 +1,77 @@
-import { Client } from "@stomp/stompjs";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import Contact from "../../../types/Contact";
 import { useAuth } from "../../../provider/AuthProvider";
-import Peer from 'simple-peer-light';
+import RingingCall from "./RingingCall";
 
 
+enum CallStatus  {
+      RINGING = "ringing",
+      IN_CALL = "inCall",
+      INCOMMING = "incomming",
+      REJECTED = "rejected",
+      ACCEPTED = "accepted"
+}
 
-const VideoCall = ({target}:{target:String})=>{
-    const [stompClient, setStompClient] = useState<any>(null);
-    const [stream, setStream] = useState<any>(null);
-    const peerRef = useRef<any>();
-    const myVideo = useRef<any>();
-    const remoteVideo = useRef<any>();
-    const {token,user} = useAuth()
-    if(!user ) return null;
+type Call = {
+    caller?:string;
+    status:CallStatus;
+}
+
+const VideoCall = ({target}:{target:Contact})=>{
+    const selfCallcontainer = useRef<HTMLDivElement>(null); 
+    const receiverCallcontainer = useRef<HTMLDivElement>(null); 
+    const {user} = useAuth()
+    const call = useRef<Call>({caller:user?.username,status:CallStatus.RINGING});
+    //const {stompClient,cleanup} = useStomp();
+    
+
     useEffect(()=>{
+      // stompClient.current?.subscribe(`/app/call/video/${user?.username}`,(message)=>{
 
-            const client = new Client({
-                  brokerURL: `ws://localhost:8080/api/v1/chat?token=${token}`,
-                  onConnect: ()=>{
-                    console.log('Connected to signaling server');
-                    client.subscribe(`/queue/${user.username}/call/video`, async ({ body }) => {
-                      const data = JSON.parse(body);
-                      console.log("Received signal:", data);
-                      console.log("peerRef.current:", peerRef.current);
+      // })
+      startStream()
+      
 
-                      // If peer already exists, just signal it
-                      if (peerRef.current) {
-                        peerRef.current.signal(data.signal);
-                        return;
-                      }
-
-                      // Step 1: Get local stream if not already
-                      let localStream = stream;
-                      if (!localStream) {
-                        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                        setStream(localStream);
-                        if (myVideo.current) {
-                          myVideo.current.srcObject = localStream;
-                        }
-                      }
-
-                      // Step 2: Create peer with initiator: false
-                      const peer = new Peer({
-                        initiator: false,
-                        trickle: false,
-                        stream: localStream,
-                      });
-
-                      peer.on('signal', (signal) => {
-                        console.log("Sending return signal to caller...");
-                        stompClient.publish({
-                          destination: `/app/${user.username}/call/video`,
-                          body: JSON.stringify({
-                            target: data.from, // Send back to caller
-                            from: user.username,
-                            signal: signal
-                          }),
-                        });
-                      });
-
-                      peer.on('stream', remoteStream => {
-                        console.log("Received remote stream!");
-                        if (remoteVideo.current) {
-                          remoteVideo.current.srcObject = remoteStream;
-                        }
-                      });
-
-                      // Step 3: Feed the initial offer signal to peer
-                      peer.signal(data.signal);
-
-                      peerRef.current = peer;
-                    });
-                        },
-                
-                });
-                client.activate()
-                setStompClient(client)      
+      return ()=>{
+        if (selfCallcontainer.current) {
+                      selfCallcontainer.current.innerHTML = '';
+        }
+      }
     },[])
-    const callPeer = async () => {
-        if (!stompClient || !stompClient.connected) {
-          console.warn("Stomp client not ready");
-          return;
-        }
-        const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setStream(localStream);
-        if (myVideo.current) {
-          myVideo.current.srcObject = localStream;
-        }
-        console.log("STOMP connected:", stompClient?.connected);
-        console.log("Local stream ready:", localStream);
-        const peer = new Peer({
-        initiator: true,
-        trickle: false,
-        stream: localStream,
-        });
-
-        peer.on('signal', signal => {
-          console.log("getting signal")
-          console.log({ target: target, from: user.username, signal })
-          console.log(JSON.stringify(signal))
-
-        stompClient.publish({
-            destination: `/app/${target}/call/video`,
-            body: JSON.stringify({ target: target, from: user.username, signal:JSON.stringify(signal) }),
-        });
-        });
-
-        peer.on('stream', remoteStream => {
-          console.log("getting stream")
-          console.log(remoteStream)
-        remoteVideo.current.srcObject = remoteStream;
-        });
-
-        peerRef.current = peer;
-        
-    };
 
 
+    
+    const startStream = async ()=>{
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });   
+      const video2 = document.createElement("video");
+      video2.autoplay = true;
+      video2.srcObject = stream;
+      video2.style.width = "100%";
+      if (selfCallcontainer.current) {
+                      selfCallcontainer.current.innerHTML = '';
+                      selfCallcontainer.current?.appendChild(video2);
+      }
+      }
 
+      const insertCall = () => {
+          switch(call.current.status){
+            case CallStatus.RINGING:
+              return  <RingingCall target={target} ></RingingCall>
+            case CallStatus.ACCEPTED:
+              break;
+          }
+      }
+   
+      if(!user)return
     return (
-    <div className="bg-background-light aspect-video w-40 z-100">
-      <button onClick={callPeer}>Start Call</button>
-      <video ref={myVideo} autoPlay muted />
-      <video ref={remoteVideo} autoPlay />
+    <div className="bg-background-light aspect-video w-4/5 h-4/5 m-4  z-100 relative rounded-md overflow-hidden">
+        {
+            insertCall()
+        }
+        <div ref={selfCallcontainer} className="absolute w-50 aspect-video overflow-hidden bg-amber-400 bottom-10 left-10 rounded-md">
+
+            </div>
     </div>
   );
 }

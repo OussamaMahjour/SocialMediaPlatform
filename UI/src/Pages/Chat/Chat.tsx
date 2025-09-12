@@ -3,7 +3,7 @@ import Account from "./component/Account";
 import Conversation from "../../types/Conversation";
 import Contact from "../../types/Contact";
 import Discussion from "./component/Discussion";
-import { Client, IMessage } from "@stomp/stompjs";
+import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 import Message, { MessageType } from "../../types/Message";
 import notificationSound from '../../assets/notification.mp3';
 import { useAuth } from "../../provider/AuthProvider";
@@ -11,11 +11,10 @@ import Input from "../../components/Input";
 import ThemeButton from "../../components/ThemeButton";
 import Button from "../../components/Button";
 import ButtonInverse from "../../components/ButtonInverse";
-import Card from "../../components/Card";
 import Attachement, { AttachementType } from "../../types/Attachement";
-import gsap from "gsap";
 import ReactPlayer from "react-player";
 import VideoCall from "./component/VideoCall";
+import CallProvider from "../../provider/CallProvider";
 
 
 
@@ -23,8 +22,8 @@ import VideoCall from "./component/VideoCall";
 
 
 function Chat():ReactElement | null{
-    const stompClientRef = useRef<Client | null>(null);
-    const [connected,setConnected] = useState(false)
+    const stompClient = useRef<Client | null>(null)
+    
     const [conversations,setConversations] = useState<Conversation[]>([])
     const [currentContact,setCurrentContact] = useState<Contact>()
     const [popup,setPopup] = useState<ReactElement|null>(null)
@@ -35,51 +34,82 @@ function Chat():ReactElement | null{
     const [attachent,setAttachment] = useState<Attachement | null>(null)
     const filePicker = useRef<any>()
     const attachementMenu = useRef<HTMLDivElement | null>(null)
+    const [isConnected,setIsConnected] = useState(false)
     if(!user) return null;
 
     useEffect(()=>{
-
-            const client = new Client({
-                  brokerURL: `ws://localhost:8080/api/v1/chat?token=${token}`,
-                  onConnect: ()=>{
-                    client.subscribe(`/queue/${user.username}/chat`, (msg: IMessage) => {
+        stompClient.current = new Client({
+            brokerURL:`ws://localhost:8080/api/v1/chat?token=${token}`,
+            onConnect:(frame)=>{
+                let subscription: StompSubscription | undefined;
+                console.log("connected as "+user.username)
+                setIsConnected(true)
+                // Only attempt to subscribe when we have a proper connection
+                if (stompClient.current && stompClient.current.connected ) {
+                    console.log(`Subscribing to /queue/${user.username}/chat`)
+                    
+                    try {
+                        subscription = stompClient.current.subscribe(`/queue/${user.username}/chat`, (msg: IMessage) => {
                             try {
-                                const raw:Message= JSON.parse(msg.body);
-                                registerMessage(raw.owner,raw)
-                                console.log('Received from:', raw.owner);
-                                console.log(raw)
-                                raw.sentAt = new Date(raw.sentAt)
+                                const raw: Message = JSON.parse(msg.body);
+                                console.log('Received message from:', raw.owner, raw);
                                 
+                                // Convert sentAt to Date object
+                                raw.sentAt = new Date(raw.sentAt);
+                                
+                                // Register the message
+                                registerMessage(raw.owner, raw);
+                                
+                                // Handle notification
                                 setUnseenConvo(prev => {
                                     const newCount = prev + 1;
                                     const audio = new Audio(notificationSound);
-                                    audio.play()
+                                    audio.play().catch(e => console.log("Could not play notification sound:", e));
                                     updateTitle(newCount);
                                     return newCount;
                                 });
                                 
-                                
                             } catch (err) {
                                 console.error('Failed to parse message:', err);
                             }
-                            });
-                            setConnected(true);
-                            console.log("Connected as "+user.username)
-                            getChat()
-                        },
-                  onDisconnect: () => {
-                    console.log("Disconnect as "+user.username)
-                    setConnected(false);
-                  },
-                  onStompError: (err) => {
-                    console.error('STOMP error:', err);
-                  }
-                });
-                stompClientRef.current = client;
-                client.activate()
+                        });
+                        
+                        console.log("Successfully subscribed to chat queue");
+                        
+                        // Load existing chat history after successful subscription
+                        getChat();
+                        
+                    } catch (error) {
+                        console.error("Failed to subscribe to chat queue:", error);
+                    }
+                } else {
+                    console.log("Not subscribing - Connection state:", {
+                        isConnected,
+                        hasStompClient: !!stompClient.current,
+                        isStompConnected: stompClient.current?.connected,
+                        hasUser: !!user
+                    });
+                }
+
+                // Cleanup function
                 return () => {
-                client.deactivate();
-                };        
+                    if (subscription) {
+                        console.log("Unsubscribing from chat queue");
+                        try {
+                            subscription.unsubscribe();
+                        } catch (error) {
+                            console.error("Error during unsubscribe:", error);
+                        }
+                    }
+                    if(isConnected && stompClient.current?.connected){
+                        stompClient.current.deactivate();
+                        setIsConnected(false);
+                    }
+                
+                };
+            }
+        })
+        stompClient.current.activate()
     },[])
 
     const getChat = async () =>{
@@ -108,19 +138,19 @@ function Chat():ReactElement | null{
 
     const registerMessage = (destination:string,message:Message)=>{
         setConversations(prev => {
-            const found = prev.find(conv => conv.contact.name === destination);
+            const found = prev.find(conv => conv.contact.username === destination);
             if (found) {
                 return prev.map(conv =>
-                    conv.contact.name === destination
+                    conv.contact.username === destination
                         ? { ...conv, messages: [...conv.messages, message] }
                         : conv
                 );
             } else {
                 const contact: Contact = {
-                    name: destination,
+                    username: destination,
                     isOnline: false,
                     lastOnline: new Date(),
-                    profile: "https://preview.redd.it/3fc3wd5xwf171.png?width=640&crop=smart&auto=webp&s=5becec3ee5ab15c5654fab0ad847cfae54f208a0"
+                    profileId: "https://preview.redd.it/3fc3wd5xwf171.png?width=640&crop=smart&auto=webp&s=5becec3ee5ab15c5654fab0ad847cfae54f208a0"
                 };
                 return [...prev, { contact: contact, messages: [message] }];
             }
@@ -142,11 +172,11 @@ function Chat():ReactElement | null{
     const setActiveContact = (contact: Contact) => {
         setConversations(prev => {
             return prev.map(conv =>
-                conv.contact.name === contact.name
+                conv.contact.username === contact.username
                     ? {
                         ...conv,
                         messages: conv.messages.map(message => {
-                            if(message.owner == contact.name){
+                            if(message.owner == contact.username){
                                 message.seen = true
                                 updateMessage(message)
                             }
@@ -165,8 +195,6 @@ function Chat():ReactElement | null{
         setCurrentContact(contact);
     };
 
-
-
     const uploadFile = async (attachent:Attachement)=>{
         if(!attachent.file)return
         let formData = new FormData()
@@ -183,14 +211,14 @@ function Chat():ReactElement | null{
         return ids[0]
     }
     const sendMessage = async (destination:string,message:Message)=>{
-        if (connected && stompClientRef.current!=null ) {
+        if (isConnected && stompClient.current!=null ) {
             if(attachent){
                 message.body = await uploadFile(attachent)
                 message.type = attachent.type
                 console.log("sending attachment")
             }
             console.log("sending message")
-            stompClientRef.current.publish({
+            stompClient.current.publish({
             destination: `/app/${destination}/chat`,
             body: JSON.stringify({...message,sentAt: message.sentAt.toISOString()}),
             });
@@ -202,7 +230,7 @@ function Chat():ReactElement | null{
     
     }
 
-    return <div className="h-full w-full  rounded shadow-md dark:shadow-secondary-dark  dark:border-border-dark  border-border-light flex bg-background-light dark:bg-background-dark relative">
+    return <div className="h-full  w-full  rounded shadow-md dark:shadow-secondary-dark  dark:border-border-dark  border-border-light flex bg-background-light dark:bg-background-dark relative">
         {
             popup==null?
             <></>:
@@ -282,14 +310,14 @@ function Chat():ReactElement | null{
         </div>
 
         {/* conversation container */}
-        <div className="h-full w-2/3 flex-1 flex flex-col">
+        <div className="h-full w-2/3 flex-1 flex flex-col ">
         {   (currentContact!=undefined)?
             /* conversations header */
             <>
             <div className="h-20 border-b w-full  dark:border-border-dark border-border-light flex gap-3 p-3 ">
-                <img className="h-full aspect-square rounded-full " src={currentContact?.profile}></img>
+                <img className="h-full aspect-square rounded-full " src={currentContact?.profileId}></img>
                 <div className="h-full w-8/10  justify-center flex flex-col  ">
-                    <h1 className="w-full flex text-lg font-bold  text-text-light dark:text-text-dark">{currentContact?.name}</h1>
+                    <h1 className="w-full flex text-lg font-bold  text-text-light dark:text-text-dark">{currentContact?.username}</h1>
                     <p className="w-full text-secondary-light text-sm">{currentContact?.isOnline?"online":`last seen: ${currentContact?.lastOnline?.toLocaleDateString()}`}</p>
                 </div>
                 <button className="h-full aspect-square text-center  text-text-light dark:text-text-dark flex justify-center items-center font-bold text-xl cursor-pointer rounded hover:dark:bg-accent-dark hover:bg-accent-light">
@@ -297,7 +325,11 @@ function Chat():ReactElement | null{
                 </button>
                 <button className="h-full aspect-square  text-center  text-text-light dark:text-text-dark flex justify-center items-center font-bold text-xl cursor-pointer rounded hover:dark:bg-accent-dark hover:bg-accent-light" onClick={()=>{
                     setPopup(
-                        <VideoCall target={currentContact.name}/>
+                        <CallProvider>
+                            <VideoCall target={currentContact}/>
+                        </CallProvider>
+                        
+                        
                     )
                 }}>
                     <i className="fa-solid fa-video"></i>
@@ -346,8 +378,8 @@ function Chat():ReactElement | null{
                     </div>
                 :
                 /* conversation body */
-                <Discussion user={user}  conversation={
-                conversations.filter((e=>e.contact.name==currentContact?.name))[0]
+                <Discussion  user={user}  conversation={
+                conversations.filter((e=>e.contact.username==currentContact?.username))[0]
                 }/>
             }
             
@@ -428,8 +460,8 @@ function Chat():ReactElement | null{
                 <ButtonInverse className="h-full aspect-square  text-xl  " 
                     onClick={()=>{
                             const message = messageRef.current?.value || "";
-                            if (currentContact.name.length !== 0 && (message.length !== 0 || (attachent!=null && attachent.file!=null))) {
-                                sendMessage(currentContact.name,{
+                            if (currentContact.username.length !== 0 && (message.length !== 0 || (attachent!=null && attachent.file!=null))) {
+                                sendMessage(currentContact.username,{
                                     body: message,
                                     owner: user.username,
                                     seen: false,

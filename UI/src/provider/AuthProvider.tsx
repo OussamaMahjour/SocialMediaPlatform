@@ -24,6 +24,7 @@ const AuthProvider = ({ children }: { children: ReactNode })=>{
   const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+      
       const initialize = async () => {
         if (token != null) {
           await getUser(token);
@@ -173,7 +174,7 @@ const AuthProvider = ({ children }: { children: ReactNode })=>{
                               changeProfile(file);
 
                            }}  type='file' id='file' ref={inputFile} style={{display: 'none'}}/>
-                          <img src={"http://localhost:8080/api/v1/media/"+user?.profilePicture} className="p-2 w-full aspect-square" alt="Profile" />
+                          <img src={"http://localhost:8080/api/v1/media/"+user?.profilePictureId} className="p-2 w-full aspect-square" alt="Profile" />
                           <div className="w-full h-full opacity-0 hover:opacity-30 flex absolute top-0 left-0 bg-accent-dark   justify-center items-center text-2xl cursor-pointer"
                             onClick={()=>{
                                 inputFile.current?.click()

@@ -1,6 +1,6 @@
 type Contact = {
-    name:string;
-    profile:string;
+    username:string;
+    profileId:string;
     isOnline:boolean;
     lastOnline?:Date;
 

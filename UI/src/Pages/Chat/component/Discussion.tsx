@@ -27,7 +27,7 @@ function Discussion({conversation,user}:Props):ReactElement{
         {
             conversation?.messages.map((e,index)=>(
                 e.owner==user.username?
-                <div className="transition-none w-full flex gap-4 justify-end items-center hover:[&_p]:visible">
+                <div key={index} className="transition-none w-full flex gap-4 justify-end items-center hover:[&_p]:visible">
                    
                     <p className="text-sm text-secondary-light dark:text-accent-light  invisible transition-none">
                         {e.sentAt.toLocaleTimeString('en-US', {
