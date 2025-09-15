@@ -31,6 +31,11 @@ public class Config {
                         .uri("lb://chat-service")
 
                 )
+                .route("notification-service",r-> r.path("/api/v1/notification/**")
+                        .filters(f->f.filter(filter))
+                        .uri("lb://notification-service")
+
+                )
                 .route("auth-service",r -> r.path("/api/v1/auth/**")
                         .uri("lb://auth-service")
                 )

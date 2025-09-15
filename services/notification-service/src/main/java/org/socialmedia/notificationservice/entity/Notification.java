@@ -1,10 +1,9 @@
 package org.socialmedia.notificationservice.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Builder
 @Getter @Setter
@@ -12,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collation = "notification")
 public  class Notification {
-    @Id
+    @MongoId
     private String id;
     private  NotificationType type ;
 }
