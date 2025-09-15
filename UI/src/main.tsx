@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.tsx'
 import AuthProvider from './provider/AuthProvider.tsx'
 import ThemeProvider from "./provider/ThemeProvider";
+import NotificationProvider from './provider/NotificationProvider.tsx'
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>
-        <App />
+        <NotificationProvider>
+          <App />
+        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,

@@ -81,6 +81,46 @@ services:
             MONGO_INITDB_DATABASE: chat
         ports:
             - "27020:27017"
+
+    notification-service:
+        container_name: notification-service
+        build:
+            context: services/notification-service
+            dockerfile: ../../docker/java/Dockerfile
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.2'
+                    memory: 512M
+                reservations:
+                    cpus: '0.1'
+                    memory: 256M
+        ports:
+            - "8086:8080"
+        depends_on:
+            - gateway
+            - notification-db
+
+    notification-db:
+        image: mongo:7.0.5
+        container_name: notification-db
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.2'
+                    memory: 512M
+                reservations:
+                    cpus: '0.1'
+                    memory: 256M
+        volumes:
+            - ./storage/notification/db:/data/db
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: root
+            MONGO_INITDB_DATABASE: notification
+        ports:
+            - "27021:27017"
     
     user-service:
         container_name: user-service
@@ -208,6 +248,7 @@ services:
             - "8888:8888"
         depends_on:
             -   minio
+            - media-db
         deploy:
             resources:
                 limits:

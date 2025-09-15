@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import Contact from "../../../types/Contact";
 import { useAuth } from "../../../provider/AuthProvider";
 import RingingCall from "./RingingCall";
+import { NotificationType, useNotification } from "../../../provider/NotificationProvider";
 
 
 enum CallStatus  {
@@ -20,6 +21,7 @@ type Call = {
 const VideoCall = ({target}:{target:Contact})=>{
     const selfCallcontainer = useRef<HTMLDivElement>(null); 
     const receiverCallcontainer = useRef<HTMLDivElement>(null); 
+    const {sendNotifification} = useNotification()
     const {user} = useAuth()
     const call = useRef<Call>({caller:user?.username,status:CallStatus.RINGING});
     //const {stompClient,cleanup} = useStomp();
@@ -30,7 +32,7 @@ const VideoCall = ({target}:{target:Contact})=>{
 
       // })
       startStream()
-      
+      sendNotifification(target,NotificationType.VIDEO_CALL,{body:"hello"})
 
       return ()=>{
         if (selfCallcontainer.current) {

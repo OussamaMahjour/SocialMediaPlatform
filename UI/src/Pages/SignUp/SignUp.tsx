@@ -22,6 +22,7 @@ function SignUp():ReactElement{
             }
 
             try {
+                console.log(user)
                 const response = await fetch("http://localhost:8080/api/v1/auth/signup", {
                     method: "POST",
                     headers: {
