@@ -1,0 +1,65 @@
+services:
+  media-service:
+    container_name: media-service
+    build:
+      context: ${SERVICES_DIR}/media-service
+      dockerfile: ${JAVA_DOCKER_FILE}
+    volumes:
+      - ${STORAGE_DIR}/media/storage:/media
+    ports:
+      - "${MEDIA_SERVICE_PORT}:8888"
+    depends_on:
+      - minio
+      - media-db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+
+  media-db:
+    image: mongo:7.0.5
+    container_name: media-db
+    volumes:
+      - ${STORAGE_DIR}/media/db:/data/db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: media
+    ports:
+      - "${MEDIA_DB_PORT}:27017"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+
+  minio:
+    image: minio/minio:RELEASE.2023-06-29T05-12-28Z.fips
+    container_name: minio
+    ports:
+      - "${MINIO_API_PORT}:9000"
+      - "${MINIO_UI_PORT}:9001"
+    volumes:
+      - ${STORAGE_DIR}/media/minio:/data
+    environment:
+      MINIO_ROOT_USER: admin1234
+      MINIO_ROOT_PASSWORD: admin1234
+      MINIO_MINIMUM_DRIVE_FREE: 1%
+
+    command: server --console-address ":9001" /data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M

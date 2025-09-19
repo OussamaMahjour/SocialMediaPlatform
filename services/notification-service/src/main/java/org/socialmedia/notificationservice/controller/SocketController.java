@@ -1,8 +1,10 @@
 package org.socialmedia.notificationservice.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.socialmedia.notificationservice.entity.Notification;
+
+import org.socialmedia.notificationservice.service.NotificationService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -13,10 +15,11 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class SocketController {
 
-    private SimpMessagingTemplate messagingTemplate;
+
+    private NotificationService notificationService;
     @MessageMapping("/{username}/notify")
-    public void notify(@DestinationVariable String username, @Payload Notification message) {
-        messagingTemplate.convertAndSend("/topic/"+username, message);
+    public void notify(@DestinationVariable String username, @Payload String payload) throws Exception {
+        notificationService.send(payload, username);
     }
 
 

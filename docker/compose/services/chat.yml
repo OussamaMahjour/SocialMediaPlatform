@@ -1,0 +1,42 @@
+
+
+services:
+  chat-service:
+    container_name: chat-service
+    build:
+      context: ${SERVICES_DIR}/chat-service
+      dockerfile: ${JAVA_DOCKER_FILE}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    ports:
+      - "${CHAT_SERVICE_PORT}:8080"
+    depends_on:
+      - gateway
+      - chat-db
+
+  chat-db:
+    image: mongo:7.0.5
+    container_name: chat-db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    volumes:
+      - ${STORAGE_DIR}/chat/db:/data/db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: chat
+    ports:
+      - "${CHAT_DB_PORT}:27017"

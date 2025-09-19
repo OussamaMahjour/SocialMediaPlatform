@@ -1,0 +1,48 @@
+services:
+  user-service:
+    container_name: user-service
+    build:
+      context: ${SERVICES_DIR}/user-service
+      dockerfile: ${JAVA_DOCKER_FILE}
+    ports:
+      - "${USER_SERVICE_PORT}:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 15s
+      retries: 6
+    environment:
+      - DISCOVERY_SERVICE_URL=http://discovery-service:8080/eureka
+      - CONFIG_SERVICE_URL=http://config-service:8080
+    depends_on:
+      - gateway
+      - user-db
+
+  user-db:
+    container_name: user-db
+    image: mysql:8.0
+    volumes:
+      - ${STORAGE_DIR}/user-db:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_PASSWORD: root
+      MYSQL_USER: mysql
+      MYSQL_DATABASE: user_service_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "${USER_DB_PORT}:3306"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M

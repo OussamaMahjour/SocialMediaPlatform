@@ -1,4 +1,4 @@
 package org.socialmedia.notificationservice.exception;
 
-public class InvalidNotificationFormat {
+public class InvalidNotificationFormat extends RuntimeException{
 }

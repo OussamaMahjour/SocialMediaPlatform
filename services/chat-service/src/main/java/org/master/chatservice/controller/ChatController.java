@@ -36,11 +36,10 @@ public class ChatController {
 
 
     }
-    @MessageMapping("/{username}/call/video")
+    @MessageMapping("/call/{username}")
     public void handleSignal(@DestinationVariable String username,@Payload JsonNode payload) {
-
-        System.out.println("Routing signal from: " );
-        messagingTemplate.convertAndSend("/queue/" + username+ "/call/video", payload);
+        System.out.println(payload);
+        messagingTemplate.convertAndSend("/topic/call/" + username, payload);
     }
 
 

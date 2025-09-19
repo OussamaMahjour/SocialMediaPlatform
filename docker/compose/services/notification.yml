@@ -1,0 +1,40 @@
+services:
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ${SERVICES_DIR}/notification-service
+      dockerfile: ${JAVA_DOCKER_FILE}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    ports:
+      - "${NOTIFICATION_SERVICE_PORT}:8080"
+    depends_on:
+      - gateway
+      - notification-db
+
+  notification-db:
+    image: mongo:7.0.5
+    container_name: notification-db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    volumes:
+      - ${STORAGE_DIR}/notification/db:/data/db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: notification
+    ports:
+      - "${NOTIFICATION_DB_PORT}:27017"

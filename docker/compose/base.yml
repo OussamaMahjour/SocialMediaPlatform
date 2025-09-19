@@ -1,0 +1,50 @@
+services:
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ../../services/gateway
+      dockerfile: ../../docker/java/Dockerfile
+    ports:
+      - "${GATEWAY_PORT}:8080"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 15s
+      retries: 6
+    depends_on:
+      - discovery
+
+  discovery:
+    container_name: discovery
+    build:
+      context: ../../services/discovery
+      dockerfile: ../../docker/java/Dockerfile
+    ports:
+      - "${DISCOVERY_PORT}:8761"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/health" ]
+      interval: 15s
+      retries: 6
+
+include:
+  - services/media.yml
+  - services/auth.yml
+  - services/chat.yml
+  - services/notification.yml
+  - services/user.yml
