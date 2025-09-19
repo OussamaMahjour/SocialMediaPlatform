@@ -2,34 +2,35 @@ import Contact from "../../../types/Contact";
 import skype_ring from "../../../assets/skype_ring.mp3"
 import { useEffect } from "react";
 import ControlPannel from "./call/ControlPannel";
+import { useCall } from "../../../provider/CallProvider";
 
 const RingingCall = ({target}:{target:Contact}) =>{
-
-    useEffect(()=>{
         const audio = new Audio(skype_ring);
-        audio.play()
-        
-    },[])
+        const {answerCall} = useCall()
+        useEffect(()=>{     
+                audio.play()
+                return ()=>{
+                        audio.pause()
+                }
+        },[])
 
-    return <div className="w-full h-full relative">
-            <div className="w-full h-full bg-background-dark dark:bg-background-light flex flex-col">
-                    <div className="w-full flex-1  flex flex-col justify-center items-center" >
-                           <span className="relative flex size-30">  
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>  
-                                <img className="relative inline-flex w-40 aspect-square rounded-full " src={target.profileId}/>
-                           </span> 
-                           <h1 className="text-accent-light dark:text-accent-dark">
-                                Ringing ...
-                           </h1>
+
+    return <div className="w-70 h-120 bg-background-dark dark:bg-background-light flex flex-col rounded-2xl z-200">
+                    <div className="h-3/5 w-full flex justify-center items-center">
+                        <img className="aspect-square w-20 rounded-full" src={`http://localhost:8080/api/v1/media/${target.profileId}`}/>
                     </div>
-                    <div className="w-full h-20 flex justify-center items-center ">
-
-                            <ControlPannel />
+                    <div className="h-2/5 w-full flex items-center justify-around">
+                        <button className="aspect-square w-15 rounded-full flex justify-center items-center bg-red-600 text-white text-2xl cursor-pointer">
+                                <i className="fa-solid fa-phone rotate-135"></i>
+                        </button>
+                        <button onClick={answerCall} className="aspect-square w-15 rounded-full flex justify-center items-center bg-green-600 text-white text-2xl cursor-pointer">
+                                <i className="fa-solid fa-phone"></i>
+                        </button>
+                        
                     </div>
-
             </div>
             
-    </div>
+    
 
 
 }

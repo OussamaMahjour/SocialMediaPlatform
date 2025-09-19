@@ -9,12 +9,12 @@ import NotificationProvider from './provider/NotificationProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider>
+    
       <AuthProvider>
-        <NotificationProvider>
+        <ThemeProvider>
           <App />
-        </NotificationProvider>
+        </ThemeProvider>
       </AuthProvider>
-    </ThemeProvider>
+   
   </StrictMode>,
 )

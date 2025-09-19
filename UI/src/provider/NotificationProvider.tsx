@@ -1,24 +1,22 @@
-import { createContext, useContext, useEffect, useRef } from "react"
+import { createContext, ReactElement, useContext, useEffect, useRef, useState } from "react"
 import Contact from "../types/Contact"
 import { Client } from "@stomp/stompjs";
 import { useAuth } from "./AuthProvider";
+import Notification, { NotificationType } from "../types/Notification";
+import { useTheme } from "./ThemeProvider";
+import RingingCall from "../Pages/Chat/component/RingingCall";
+import ChatNotification from "../types/ChatNotification";
+import CallProvider from "./CallProvider";
 
 
 
-export enum NotificationType {
-    VIDEO_CALL = "videaCall"
-}
 
 
-type Notification = {
 
-}
 
 type NotificationContextType = {
-    sendNotifification:(contact:Contact,notificationType:NotificationType,payload:Object)=>void;
-    onNotification:(notification:Notification)=>void;
-
-    
+    sendNotifification:(contact:Contact,notification:Notification)=>void;
+    onNotification:(action:(notification:Notification)=>void)=>void;
 }
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
@@ -27,21 +25,39 @@ const NotificationContext = createContext<NotificationContextType | null>(null);
 
 const NotificationProvider = ({children}:{children:React.ReactNode})=>{
     
-    const NotificationActions = useRef<{(notification:Notification):void}[]>([]);
-    const stompClient = useRef<Client | null>(null);
-    const {user,token} = useAuth();
     
+    const stompClient = useRef<Client | null>(null);
+    const {user,token,getContact} = useAuth();
+    const [popup,openPopup] = useState<ReactElement|null>(null)
+    
+    const defaultNotficationActions = [
+        async (notification:Notification)=>{
+            var chatNotification = notification as ChatNotification
+            var contact = await getContact(chatNotification.senderUsername)
+            openPopup(<CallProvider initCall={false} target={contact}></CallProvider>)
+        }
+    ]
+
+
+    const NotificationActions = useRef<((notification:Notification)=>void)[]>([]);    
+    useEffect(()=>{
+        defaultNotficationActions.forEach((e)=>{
+            NotificationActions.current.push(e)
+        })
+        
+    },[])
+
+
     useEffect(()=>{
         stompClient.current = new Client({
             brokerURL:`ws://localhost:8080/api/v1/notification?token=${token}`,
-            onConnect: (frame)=>{
+            onConnect: (frame)=> {
                 console.log("notification connected as "+user?.username);
                 stompClient.current?.subscribe(`/topic/${user?.username}`,(message)=>{
-                    const notification:Notification = message.body;
-                    // NotificationActions.current.forEach((action)=>{
-                    //     action(notification)
-                    // })
-                    console.log(notification)
+                    NotificationActions.current.forEach((action)=>{
+                        action(JSON.parse(message.body) as Notification)
+                    })
+                    console.log(message.body)
                 })
             }
         })
@@ -53,20 +69,31 @@ const NotificationProvider = ({children}:{children:React.ReactNode})=>{
         }
     },[])
     
-    const sendNotifification = (contact:Contact,notificationType:NotificationType,payload:Object)=>{
+    const sendNotifification = (contact:Contact,notification:Notification)=>{
             if(stompClient.current && stompClient.current.connected){
-                const notification = payload
-                stompClient.current.publish({
-                    destination:`/app/${contact.username}/notify`,
-                    body:JSON.stringify(notification)})
+                if('message' in notification){
+                    let chatNotfication = notification as ChatNotification;
+                    stompClient.current.publish({
+                        destination:`/app/${contact.username}/notify`,
+                        body:JSON.stringify(notification)})
+                }
             }
     }
-    const onNotification = ()=>{
-
+    const onNotification = (action:(notification:Notification)=>void)=>{
+             NotificationActions.current.push(action);
     }
 
 
     return <NotificationContext.Provider value={{sendNotifification,onNotification}}>
+         {
+            popup==null?
+            <></>:
+            <div className="absolute top-0 left-0 h-screen w-screen flex justify-center items-center z-100" >
+                <div className="absolute h-full w-full bg-[#00000033] top-0 left-0" onClick={()=>{openPopup(null)}}></div>
+                {popup}
+            </div>
+            
+        }
         {children}
     </NotificationContext.Provider>
 }

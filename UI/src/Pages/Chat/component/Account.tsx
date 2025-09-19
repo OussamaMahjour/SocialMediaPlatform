@@ -16,7 +16,7 @@ function Account({isActive,contact,lastMessage,lastMessageTime,nbrOfUnSeenMessag
     return <div className={`w-full h-20 p-4    rounded hover:bg-accent-light hover:dark:bg-accent-dark cursor-pointer flex items-center gap-2 ${isActive?"dark:bg-accent-dark bg-accent-light":""}`}
             onClick={()=>setCurrentContact(contact)}
     >
-        <img className="h-full aspect-square rounded-full " src={contact.profileId}></img>
+        <img className="h-full aspect-square rounded-full " src={`http://localhost:8080/api/v1/media/${contact.profileId}`}></img>
         <div className="h-full w-7/10 ">
                 <div className="flex justify-between items-center h-1/2">
                     <h1 className="h-full text-center  text-text-light dark:text-text-dark ">{contact.username}</h1>

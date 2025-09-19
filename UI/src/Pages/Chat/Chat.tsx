@@ -15,6 +15,8 @@ import Attachement, { AttachementType } from "../../types/Attachement";
 import ReactPlayer from "react-player";
 import VideoCall from "./component/VideoCall";
 import CallProvider from "../../provider/CallProvider";
+import { useNotification } from "../../provider/NotificationProvider";
+import { useTheme } from "../../provider/ThemeProvider";
 
 
 
@@ -26,15 +28,16 @@ function Chat():ReactElement | null{
     
     const [conversations,setConversations] = useState<Conversation[]>([])
     const [currentContact,setCurrentContact] = useState<Contact>()
-    const [popup,setPopup] = useState<ReactElement|null>(null)
     const destinationRef = useRef<HTMLInputElement>(null);
     const [,setUnseenConvo] = useState(0)
     const messageRef = useRef<HTMLInputElement>(null)
-    const {user,token,openSetting} = useAuth()
+    const {user,token,openSetting,getContact} = useAuth()
     const [attachent,setAttachment] = useState<Attachement | null>(null)
     const filePicker = useRef<any>()
     const attachementMenu = useRef<HTMLDivElement | null>(null)
     const [isConnected,setIsConnected] = useState(false)
+    
+    const [popup,openPopup] = useState<ReactElement|null>(null)
     if(!user) return null;
 
     useEffect(()=>{
@@ -137,24 +140,20 @@ function Chat():ReactElement | null{
 
 
     const registerMessage = (destination:string,message:Message)=>{
-        setConversations(prev => {
-            const found = prev.find(conv => conv.contact.username === destination);
-            if (found) {
-                return prev.map(conv =>
-                    conv.contact.username === destination
-                        ? { ...conv, messages: [...conv.messages, message] }
-                        : conv
-                );
-            } else {
-                const contact: Contact = {
-                    username: destination,
-                    isOnline: false,
-                    lastOnline: new Date(),
-                    profileId: "https://preview.redd.it/3fc3wd5xwf171.png?width=640&crop=smart&auto=webp&s=5becec3ee5ab15c5654fab0ad847cfae54f208a0"
-                };
-                return [...prev, { contact: contact, messages: [message] }];
-            }
-        });           
+        getContact(destination).then(contact=>{
+            setConversations((prev) => {
+                const found = prev.find((conv) => conv.contact.username === destination);
+                if (found) {
+                    return prev.map(conv =>
+                        conv.contact.username === destination
+                            ? { ...conv, messages: [...conv.messages, message] }
+                            : conv
+                    );
+                } else {
+                    return [...prev, { contact: contact, messages: [message] }];
+                }
+            });    
+        })       
     }
   
 
@@ -235,7 +234,7 @@ function Chat():ReactElement | null{
             popup==null?
             <></>:
             <div className="absolute top-0 left-0 h-screen w-screen flex justify-center items-center" >
-                <div className="absolute h-full w-full bg-[#00000033] top-0 left-0" onClick={()=>{setPopup(null)}}></div>
+                <div className="absolute h-full w-full bg-[#00000033] top-0 left-0" onClick={()=>{openPopup(null)}}></div>
                 {popup}
             </div>
             
@@ -252,7 +251,7 @@ function Chat():ReactElement | null{
                 <ThemeButton className="w-3/7 " />
                 
                 <Button className="h-full w-1/7 text-center  text-text-light dark:text-text-dark flex justify-center items-center font-bold text-xl cursor-pointer rounded hover:dark:bg-accent-dark hover:bg-accent-light" 
-                    onClick={()=>setPopup(
+                    onClick={()=>openPopup(
                         <div id="popup" className="z-100 min-w-1/4 w-100 rounded  shadow-md dark:shadow-secondary-dark  border  border-accent-light flex bg-background-light dark:bg-background-dark flex-col items-center justify-around gap-4 " > 
                             <div className="h-20 w-full flex p-3 py-4 gap-1  ">
                                 <Input ref={destinationRef} id="destination" placeholder="Username" />
@@ -277,7 +276,7 @@ function Chat():ReactElement | null{
                                             sentAt: new Date(),
                                           });
                                         }
-                                        setPopup(null)                                      
+                                        openPopup(null)                                      
                                     }}>
                                     <i className="fa-solid fa-paper-plane "></i>
                                 </ButtonInverse>
@@ -324,9 +323,9 @@ function Chat():ReactElement | null{
                     <i className="fa-solid fa-phone"></i>
                 </button>
                 <button className="h-full aspect-square  text-center  text-text-light dark:text-text-dark flex justify-center items-center font-bold text-xl cursor-pointer rounded hover:dark:bg-accent-dark hover:bg-accent-light" onClick={()=>{
-                    setPopup(
-                        <CallProvider>
-                            <VideoCall target={currentContact}/>
+                    openPopup(
+                        <CallProvider initCall={true} target={currentContact}>
+                          
                         </CallProvider>
                         
                         

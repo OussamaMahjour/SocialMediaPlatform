@@ -59,11 +59,11 @@ function  App():ReactElement {
         ...authenticatedRoutesOnly
     ])
 
-   
+    console.log(import.meta.env.VITE_TEST)
     return <> 
     
             <div className={`h-screen w-screen relative  bg-primary-light dark:bg-primary-dark *:transition *:duration-300 *:ease-in-out  flex flex-col justify-center items-center` }>    
-                    
+                  
                     <RouterProvider router={router} />
 
             </div> 

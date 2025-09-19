@@ -1,10 +1,11 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import { createContext, Dispatch, ReactElement, ReactNode, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import Alert from "../components/Alert";
 
 type ThemeContext = {
     theme:string | null;
     toggleTheme:()=>void ;
-    setAlert:Dispatch<SetStateAction<{ message: string; timeout: number; }>>
+    setAlert:Dispatch<SetStateAction<{ message: string; timeout: number; }>>;
+    openPopup:Dispatch<SetStateAction<ReactElement|null>>
 }
 
 const ThemContext = createContext<ThemeContext | undefined>(undefined)
@@ -13,7 +14,7 @@ const ThemContext = createContext<ThemeContext | undefined>(undefined)
 const ThemeProvider = ({ children }: { children: ReactNode })=>{
          const [theme,setTheme] = useState<string | null>(()=>localStorage.getItem("theme"));
          const [alertMessage,setAlert]  = useState<{message:string,timeout:number}>({message:"",timeout:0})
-         
+         const [popup,openPopup] = useState<ReactElement|null>(null)
     
         const toggleTheme = ()=>{
             if(theme=="light"){
@@ -29,6 +30,7 @@ const ThemeProvider = ({ children }: { children: ReactNode })=>{
             }
            
         }
+        
         
         
         const alertRef = useRef<HTMLDivElement | null>(null);
@@ -54,8 +56,8 @@ const ThemeProvider = ({ children }: { children: ReactNode })=>{
         }, []);
        
 
-    return <ThemContext.Provider value={{theme,toggleTheme,setAlert}}>
-        
+    return <ThemContext.Provider value={{theme,toggleTheme,setAlert,openPopup}}>
+       
         <div className={`${theme}  h-full w-full relative `}>
             <Alert ref={alertRef} alert={alertMessage} ></Alert>
             {children}

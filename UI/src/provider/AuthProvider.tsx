@@ -2,6 +2,7 @@ import {createContext,ReactNode, useContext, useEffect,useRef,useState } from "r
 import User from "../types/User";
 import Exception from "../types/Exception";
 import gsap from "gsap";
+import Contact from "../types/Contact";
 
 
 type AuthContextType = {
@@ -11,6 +12,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   user:User | null;
   openSetting:()=>void;
+  getContact:(username:string)=>Promise<Contact>
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,7 +37,21 @@ const AuthProvider = ({ children }: { children: ReactNode })=>{
     }, []);
     
     
-    
+    const getContact = async (username:string)=>{
+      const response = await fetch(`http://localhost:8080/api/v1/users/${username}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+                });
+
+      const userDetails:User = await response.json()
+      const contact:Contact = {
+        username:userDetails.username,
+        profileId:userDetails.profilePictureId?userDetails.profilePictureId:"",
+        isOnline:false
+      }
+      return contact
+    }
 
     const getUser = async (token:string)=>{
           try {
@@ -158,7 +174,7 @@ const AuthProvider = ({ children }: { children: ReactNode })=>{
 
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuthenticated ,user,openSetting}}>
+    <AuthContext.Provider value={{ token, login, logout, isAuthenticated ,user,openSetting,getContact}}>
       {user?
       <div className="w-screen h-screen opacity-100 absolute hidden z-100 " ref={settingContainer}>
           <div className="w-full h-full fixed bg-background-dark dark:bg-background-light z-100 opacity-40 " onClick={closeSetting}>
