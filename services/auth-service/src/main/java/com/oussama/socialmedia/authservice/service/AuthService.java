@@ -6,6 +6,7 @@ import com.oussama.socialmedia.authservice.Dto.RegisterUserDto;
 import com.oussama.socialmedia.authservice.client.UserClient;
 import com.oussama.socialmedia.authservice.entity.User;
 import com.oussama.socialmedia.authservice.exception.InvalidCredentialException;
+import com.oussama.socialmedia.authservice.exception.RegisterException;
 import com.oussama.socialmedia.authservice.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,13 +30,30 @@ public class AuthService {
 
     @Transactional
     public User signUp(RegisterUserDto registerUserDto) {
-        userClient.saveUser(registerUserDto);
+        RegisterException registerException = RegisterException.builder().build();
+        var isError = false;
+
         User user = User.builder()
                 .username(registerUserDto.getUsername())
                 .password(passwordEncoder.encode(registerUserDto.getPassword()))
                 .email(registerUserDto.getEmail())
                 .build();
-
+        if(userRepository.findByUsername(user.getUsername()).isPresent()){
+            isError = true;
+            registerException.setUsername("Username already taken");
+        }
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            isError = true;
+            registerException.setEmail("Email already taken");
+        }
+        if(userRepository.findByPhoneNumber(registerUserDto.getPhone().toString()).isPresent()){
+            isError = true;
+            registerException.setPhone("Phone number already taken");
+        }
+        if(isError){
+            throw registerException;
+        }
+        var response = userClient.saveUser(registerUserDto);
         return userRepository.save(user);
     }
 

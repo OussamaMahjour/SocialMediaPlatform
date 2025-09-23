@@ -37,7 +37,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @NonNull
-    private LocalDate birthday;
+    private LocalDate birthdate;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

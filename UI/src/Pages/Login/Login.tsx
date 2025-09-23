@@ -1,12 +1,11 @@
-import { MouseEventHandler, ReactElement, useState } from "react";
+import { ReactElement, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../provider/AuthProvider";
 import FormInput from "../../components/FormInput";
 import Card from "../../components/Card";
 import ThemeButton from "../../components/ThemeButton";
 import ButtonInverse from "../../components/ButtonInverse";
-import Exception, { ExceptionType } from "../../types/Exception";
 import { useTheme } from "../../provider/ThemeProvider";
+import AuthService from "../../services/auth-service";
 
 
 
@@ -16,7 +15,6 @@ function Login():ReactElement{
 
     const [username,setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const {login} = useAuth();
     const [error,setError] = useState<string>()
     const {setAlert} = useTheme()
     const [loading,setLoading] = useState(false)
@@ -28,31 +26,29 @@ function Login():ReactElement{
     const handleLogin = async (event:any) => {
         setLoading(true)
         if ((username.length!=0) || (password.length!=0)) {
-            try{
-                await login(username,password)
-                navigate("/chat")
-            }catch(e: unknown){
-                if(e instanceof Exception){      
-                    if(e.type == ExceptionType.BAD_CREDENTIAL){
-                        console.log("catching exception",e as Exception)
-                            setError("Bad creadentials")
-                            setLoading(false)
-                                     
-                    }else {
-                        setAlert({message:"Unable to Login! Try Again Later.",timeout:2000})
-                        console.error("Unknown error during login:", e);
-                    }
-            }}
+            
+            const feedback = await AuthService.login(username,password)
+
+            if(feedback?.isError){
+
+                if(feedback.Errors.unknown){
+                    setAlert({message:feedback.Errors.unknown,timeout:2000})
+                }else if(feedback.Errors.username || feedback.Errors.password){
+                    setError(feedback.Errors.username);
+                }
+                setLoading(false)
+            }
         }else{
                 setAlert({message:"Both Usename and Password should be set",timeout:2000})
+                setLoading(false)
         }
+      
         
-        
-    };
+    }
 
 
 
-    return <Card className="min-w-1/4 w-100 max-h-300 h-2/3  gap-4 px-13">
+    return <Card className="min-w-1/4 w-100 max-h-300 h-2/3 min-h-100  gap-4 px-13">
                 
                     <ThemeButton className="w-10 absolute top-10 left-10"/>
                

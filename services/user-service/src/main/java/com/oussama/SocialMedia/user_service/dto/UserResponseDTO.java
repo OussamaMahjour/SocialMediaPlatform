@@ -22,6 +22,6 @@ public class UserResponseDTO
         private String email;
         private String profilePictureId;
         private Gender gender;
-        private LocalDate birthday;
+        private LocalDate birthdate;
 
 }

@@ -17,7 +17,7 @@ public class Mapper implements MapperInterface{
                 .email(userRequestDTO.getEmail())
                 .about(userRequestDTO.getAbout())
                 .gender(userRequestDTO.getGender())
-                .birthday(userRequestDTO.getBirthday())
+                .birthdate(userRequestDTO.getBirthdate())
                 .phone(userRequestDTO.getPhone())
                 .build();
     }
@@ -34,7 +34,7 @@ public class Mapper implements MapperInterface{
                     .email(user.getEmail())
                     .about(user.getAbout())
                     .gender(user.getGender())
-                    .birthday(user.getBirthday())
+                    .birthdate(user.getBirthdate())
                     .phone(user.getPhone())
                     .profilePictureId(user.getProfilePictureId())
                     .build();

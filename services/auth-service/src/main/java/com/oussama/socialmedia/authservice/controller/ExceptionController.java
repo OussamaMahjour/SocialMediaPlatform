@@ -4,6 +4,7 @@ package com.oussama.socialmedia.authservice.controller;
 import com.oussama.socialmedia.authservice.Dto.ExceptionResponse;
 import com.oussama.socialmedia.authservice.Dto.ExceptionType;
 import com.oussama.socialmedia.authservice.exception.InvalidCredentialException;
+import com.oussama.socialmedia.authservice.exception.RegisterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -42,12 +43,18 @@ public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneric(Exception ex) {
+        System.out.println(ex.getMessage());
         return new ResponseEntity<>(
                 ExceptionResponse.builder()
                         .error("internal server error")
                         .type(ExceptionType.UNKNOWN)
                         .build(),HttpStatus.INTERNAL_SERVER_ERROR
         );
+    }
+    @ExceptionHandler(RegisterException.class)
+    public ResponseEntity<?> handleRegisterException(RegisterException ex) {
+        System.out.println(ex.getMessage());
+        return ResponseEntity.badRequest().body(ex);
     }
 
 }

@@ -29,17 +29,17 @@ import java.util.Map;
 public class ChatController {
     private ChatService chatService;
     private SimpMessagingTemplate messagingTemplate;
-    @MessageMapping("/{username}/chat")
+    @MessageMapping("/message/{username}")
     public void test(@DestinationVariable String username, Message message){
        chatService.save(username, message);
-       messagingTemplate.convertAndSend("/queue/"+username+"/chat",message);
+       messagingTemplate.convertAndSend("/queue/message/"+username,message);
 
 
     }
     @MessageMapping("/call/{username}")
     public void handleSignal(@DestinationVariable String username,@Payload JsonNode payload) {
         System.out.println(payload);
-        messagingTemplate.convertAndSend("/topic/call/" + username, payload);
+        messagingTemplate.convertAndSend("/queue/call/" + username, payload);
     }
 
 

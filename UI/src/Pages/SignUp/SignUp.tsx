@@ -5,18 +5,19 @@ import FormInput from "../../components/FormInput";
 import Card from "../../components/Card";
 import ThemeButton from "../../components/ThemeButton";
 import ButtonInverse from "../../components/ButtonInverse";
+import SignUpDetails from "../../entities/auth/SignUpDetails";
 
 
 
 
 function SignUp():ReactElement{
 
-    const [user,setUser] = useState<User>({username:""})
-    const [password,setPassword] = useState("")    
+    const [user,setUser] = useState<SignUpDetails | null>(null)
+    
     
 
     const handleSignup = async () => {
-        if (!user.username || !password) {
+        if (!user?.username || !user.password) {
                 alert("Please enter both username and password");
                 return;
             }

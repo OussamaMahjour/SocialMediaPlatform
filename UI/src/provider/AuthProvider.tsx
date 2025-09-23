@@ -1,8 +1,13 @@
 import {createContext,ReactNode, useContext, useEffect,useRef,useState } from "react";
-import User from "../types/User";
 import Exception from "../types/Exception";
 import gsap from "gsap";
 import Contact from "../types/Contact";
+import AuthService from "../services/auth-service";
+import authApi from "../api/auth";
+import { userApi } from "../api/users";
+import JwtToken from "../entities/auth/JwtToken";
+import User from "../entities/user/User";
+import UserService from "../services/user-service";
 
 
 type AuthContextType = {
@@ -24,12 +29,12 @@ const AuthProvider = ({ children }: { children: ReactNode })=>{
   const [user,setUser] = useState<User | null>(null)
   const [isAuthenticated,setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true);
-
+  const [newToken,setNewToken] = useState<JwtToken | null>(null);
     useEffect(() => {
-      
       const initialize = async () => {
         if (token != null) {
-          await getUser(token);
+         setUser(await UserService.getLoggedUser())
+         setIsAuthenticated(true)
         }
         setLoading(false); 
       };
@@ -53,22 +58,7 @@ const AuthProvider = ({ children }: { children: ReactNode })=>{
       return contact
     }
 
-    const getUser = async (token:string)=>{
-          try {
-         const response = await fetch(`http://localhost:8080/api/v1/users`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-                });
-                if (!response.ok) throw new Error(`Status: ${response.status}`);
-                const userData:User = await response.json();
-                setUser(userData)
-                setIsAuthenticated(true)
-            } catch (err) {
-                console.error("Failed to fetch user:", err);
-            }
-            
-    }
+   
 
   const login = async (username:string,password:string) => {
       if (!username || !password) {

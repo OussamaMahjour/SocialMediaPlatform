@@ -31,5 +31,5 @@ public class UserRequestDTO {
     @Nullable
     private Gender gender;
     @Nullable
-    private LocalDate birthday;
+    private LocalDate birthdate;
 }

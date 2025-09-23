@@ -1,4 +1,4 @@
-INSERT INTO users (username, firstname, lastname, about, phone, email, gender, birthday, created_at, updated_at, scheduled_to_be_deleted_at)
+INSERT INTO users (username, firstname, lastname, about, phone, email, gender, birthdate, created_at, updated_at, scheduled_to_be_deleted_at)
 VALUES
     ('BugHunter3000', 'John', 'Doe', 'Software developer', 1234567890, 'john.doe@example.com', 'MALE', '1995-06-15', '2024-02-21 10:00:00', '2024-02-21 10:00:00', NULL),
     ('404NotFound', 'Jane', 'Smith', 'Data scientist', 1987654321, 'jane.smith@example.com', 'FEMALE', '1993-09-23', '2024-02-21 10:05:00', '2024-02-21 10:05:00', NULL),

@@ -1,13 +1,30 @@
 import User from "../types/User";
 
+const BASE_URL = "http://localhost:8080/api/v1/users"
+
+
 export const userApi = {
     getUser: async (username:string,token:string)=>{
-        const response = await fetch(`http://localhost:8080/api/v1/users/${username}`)
+        const response = await fetch(`${BASE_URL}/${username}`,{
+            headers:{
+                 Authorization: `Bearer ${token}`
+            }
+        })
         return response.json();
+    },
+
+    getUserFromToken:async (token:string) =>{
+        const response = await fetch(BASE_URL,{
+            method:"GET",
+            headers:{
+                 Authorization: `Bearer ${token}`
+            }
+        });
+        return response.json()
     },
     
     updateUser: async (username:string,userData:User,token:string)=>{
-        const response = await fetch(`http://localhost:8080/api/v1/users`,{
+        const response = await fetch(BASE_URL,{
             method:'PUT',
             body:JSON.stringify(userData),
             headers:{
@@ -18,7 +35,7 @@ export const userApi = {
     },
 
     deleteUser:async (username:string,token:string)=>{
-        const response = await fetch(`http://localhost:8080/api/v1/users`,{
+        const response = await fetch(BASE_URL+"/"+username,{
             method:'DELETE',
             headers:{
                  Authorization: `Bearer ${token}`
@@ -31,7 +48,7 @@ export const userApi = {
         const formData = new FormData();
         formData.append("context", "profile");
         formData.append("medias", file);
-        let response  = await fetch(`http://localhost:8080/api/v1/users/${username}/profile`,{
+        let response  = await fetch(`${BASE_URL}/${username}/profile`,{
             method: "PUT",
             body:formData,
             headers: {
