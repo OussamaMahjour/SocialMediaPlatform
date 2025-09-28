@@ -1,6 +1,6 @@
 import User from "../../entities/user/User";
 
-const BASE_URL = "http://localhost:8080/api/v1/users"
+const BASE_URL = "http://localhost:8083/api/v1/users"
 
 
 export const userApi = {

@@ -9,7 +9,7 @@ export default function Template({children}:{children:ReactNode}){
     const {user} = useAuth()
     const navigate = useNavigate();
     return <div className="h-full w-full  flex flex-col">
-                <div className="h-15 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark w-full flex justify-between px-4 items-center ">
+                <div className="h-15 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark w-full flex justify-between px-4 items-center  border-b border-border-light dark:border-border-dark ">
                     <div onClick={()=>{navigate("/")}} className="flex items-center  justify-center cursor-pointer">
                         <img className="aspect-square w-10" src={`/icon-${theme}.svg`} />
                         <h1 className="text-2xl text-text-light dark:text-text-dark font-bold">Cosmos</h1>

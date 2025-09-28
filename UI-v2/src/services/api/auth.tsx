@@ -36,6 +36,7 @@ const authApi = {
 
     getJWTToken:()=>{
         const token = localStorage.getItem("token")
+        if(!token) throw Error("no user logged in") 
         return token;
     }
 

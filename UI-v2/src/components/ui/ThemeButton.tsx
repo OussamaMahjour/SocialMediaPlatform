@@ -51,7 +51,6 @@ const ThemeButton = ({className}:{className?:string})=>{
             <div 
             className="
             w-full p-1
-           
             rounded-full border border-background-dark dark:border-background-light
             bg-background-light
             dark:bg-background-dark

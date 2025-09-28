@@ -1,8 +1,9 @@
+import Account from "../user/Account";
 import Message from "./Message";
 
-type Chat = {
-    username:string;
+type Conversation = {
+    contact:Account;
     messages:Message[];
 }
 
-export default Chat;
+export default Conversation;

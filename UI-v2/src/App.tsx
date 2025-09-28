@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import UI from './pages/UI'
 import routerUtils from './utils/routerUtils'
+import Template from './components/Template'
 
 function App() {
 
@@ -13,7 +14,11 @@ function App() {
     {
       path:"/ui",
       element:<UI/>
-    }
+    },
+    {
+      path:"/chat",
+      element:<Template> <Chat /> </Template>
+    },
   ]
 
   const authenticatedRoutes = [
@@ -21,10 +26,7 @@ function App() {
       path:"/",
       element:<Home />
     },
-    {
-      path:"/chat",
-      element:<Chat />
-    }
+    
   ]
 
   const noneAuthenticatedRoutes = [

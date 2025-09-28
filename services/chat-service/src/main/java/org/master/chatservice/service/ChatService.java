@@ -17,10 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -49,16 +46,21 @@ public class ChatService {
     }
 
     public List<ChatResponseDto> findChats(String username) {
-        List<Chat> chats = chatRepository.findByParticipantsContaining(username);
+        Optional<List<Chat>> chats = chatRepository.findByParticipantsContaining(username);
         List<ChatResponseDto> chatResponseDtos = new ArrayList<>();
-        for (Chat chat : chats) {
+        if(chats.isEmpty()) {
+            return chatResponseDtos;
+        }
+        List<Chat> conversations = chats.get();
+        for (Chat chat : conversations) {
             List<MessageResponseDto> messages = messageRepository.findByConversationId(chat.getId())
                     .stream()
                     .map(mapper::MessageToMessageResponseDTO)
                     .toList();
-
+            Optional<String> accountName = chat.getParticipants().stream().filter(item -> !item.equals(username)).findFirst();
+            if(accountName.isEmpty()) {continue;}
             chatResponseDtos.add(ChatResponseDto.builder()
-                            .username(chat.getParticipants().stream().filter(item -> !item.equals(username)).findFirst().get())
+                            .username(accountName.get())
                             .messages(messages)
                     .build());
         }

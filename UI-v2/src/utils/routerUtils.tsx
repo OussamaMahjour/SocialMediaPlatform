@@ -17,7 +17,6 @@ const routerUtils = {
         authenticatedRoutes.forEach((e)=>{
             e.element = <AuthenticatedRoute>{e.element}</AuthenticatedRoute>
         })
-        console.log( [...publicRoutes,...noneAuthenticatedRoutes,...authenticatedRoutes])
         return [...publicRoutes,...noneAuthenticatedRoutes,...authenticatedRoutes]
     }
 }
