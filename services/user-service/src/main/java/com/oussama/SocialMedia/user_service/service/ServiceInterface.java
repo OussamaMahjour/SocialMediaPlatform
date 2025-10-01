@@ -16,5 +16,5 @@ public interface ServiceInterface {
     public UserResponseDTO getUserByEmail(String email);
     public UserResponseDTO getUserByUsername(String username);
     public UserResponseDTO updateProfilePicture(String username, List<MultipartFile> files);
-
+    public List<UserResponseDTO> getUsersByPrefix(String prefix);
 }

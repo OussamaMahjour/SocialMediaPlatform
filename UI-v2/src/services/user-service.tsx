@@ -26,6 +26,10 @@ const UserService = {
             console.warn("error getting user "+username);
         }
         
+    },
+    search:async (prefix:string)=>{
+        const users:Account[] = await userApi.getUsersByPrefix(prefix);
+        return users;
     }
 }
 

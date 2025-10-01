@@ -35,7 +35,7 @@ export default function PopupProvider({children}:{children:ReactNode}){
     return <PopupContext.Provider value={{openPopup,showInfo,closePopup}}>
         {
             popup?createPortal(
-                <div className="h-screen w-screen z-layer-9 bg-[#00000005] fixed top-0 left-0 flex justify-center items-center" >
+                <div className="h-screen w-screen z-layer-9 bg-[#00000015] fixed top-0 left-0 flex justify-center items-center" >
                     <div className="absolute top-0 left-0 h-full w-full bg-transparent z-layer-background" onClick={closePopup}></div>
                     {popup}
                 </div>,

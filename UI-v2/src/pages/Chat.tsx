@@ -1,56 +1,156 @@
-import { useEffect, useState } from "react"
-import Card from "../components/ui/Card"
-import useChat from "../hooks/useChat"
+import { createContext, useContext, useEffect, useState } from "react"
 import ChatService from "../services/chat-service";
 import Conversation from "../entities/chat/Conversation";
-import ContactView from "./chat/component/ContactView";
-import ConversationView from "./chat/component/ConversationView";
-import VideoCallButton from "./chat/component/VideoCallButton";
-import VoiceCallButton from "./chat/component/VoiceCallButton";
+import { usePopup } from "../services/providers/PopupProvider";
+import Account from "../entities/user/Account";
+import Attachement, { AttachementType } from "../entities/chat/Attachement";
+import ChatView from "./chat/ChatView";
+import { Client } from "@stomp/stompjs";
+import Message, { MessageType } from "../entities/chat/Message";
+import MediaService from "../services/media-service";
+import { useAuth } from "../services/providers/AuthProvider";
+import UserService from "../services/user-service";
+
+
+type ChatContextType = {
+    openConversation:(contact:Account)=>void;
+    sendMessage:(destination:Account,message:Message) =>void;
+    activeConv:Conversation | null;
+    chat:Conversation[] | null;
+    attachments:Attachement[] | null;
+    setAttachments:React.Dispatch<React.SetStateAction<Attachement[] | null>>
+}
+
+const ChatContext = createContext<ChatContextType | null>(null);
+
 
 export default function Chat(){
-    const {sendMessage,loading,chat} = useChat()
     const [activeConv,setActiveConv] = useState<Conversation | null>(null)
-    
-    
-    if(loading) return <>Loading</>
-    return <div className="w-full h-full bg-background-light dark:bg-background-dark flex ">
-                <div className="w-2/6 h-full min-w-100 max-w-140 border-r border-border-light dark:border-border-dark flex flex-col">
-                    <div className=" h-18 w-full border-b border-border-light dark:border-border-dark p-4 flex items-center justify-between">
-                        <h1 className="text-xl font-semibold ">Messages</h1>
-                        <Card className="px-2 py-1 shadow-none border-none *:cursor-pointer">
-                            <button  className="text-xl ">
-                                <i className="fa-solid fa-plus"></i>
-                            </button>
-                        </Card>
-                    </div>
-                    <div className="flex-1 overflow-scroll ">
-                        {chat?.map((element,index)=>(
-                            <ContactView key={index} onClick={()=>{setActiveConv(element)}} lastMessage={ChatService.getLastMessage(element)} contact={element.contact}></ContactView>
-                        ))}
-                    </div>
-                </div>
-                <div className="flex-1 h-full">
-                        {activeConv?<>
-                        <div className="h-18 w-full border-b border-border-light dark:border-border-dark p-4 flex items-center justify-between gap-3">
-                            <div className="flex-1 flex gap-5"> 
-                                <img className="w-14 aspect-square rounded-full" src={`http://localhost:8080/api/v1/media/${activeConv.contact.profileId}`} />
-                                <div className="">
-                                    <h1 className="text-xl font-semibold">{activeConv.contact.username}</h1>
-                                    <p>{activeConv.contact.isOnline?"online":activeConv.contact.lastOnline?.getDate()}</p>
-                                </div>
-                            </div>
-                            <VideoCallButton />
-                            <VoiceCallButton />
-                        </div>
-                        <ConversationView conversation={activeConv}/>
+    const {closePopup} = usePopup()
+    const [attachments,setAttachments] = useState<Attachement[] | null>(null);
+    const [loading,setLoading] = useState(true)
+    const [client,setClient] = useState<Client | null>(null)
+    const [chat,setChat] = useState<Conversation[] | null>(null);
+    const {user} = useAuth();
+    useEffect(()=>{
+        let isMounted = true;
+        const initSocket = async ()=>{
+        const client = await ChatService.initialSocketConnnection(async (message)=>{
+            const account = await UserService.getUser(message.owner);
+            if(account){
+                updateChat(account,message)
+            }
+            
+        })
+        if(isMounted)setClient(client)
+        
+        }
+        initSocket()
+        
+        return ()=>{
+            isMounted = false;
+            client?.deactivate();
+        }
+    },[])
+  
 
-                        </>
-                        :<div className="w-full h-full flex justify-center items-center">
-                            <i className="fa-regular fa-message  text-center text-9xl text-secondary-light "></i>
-                        </div>
+    useEffect(()=>{
+        if (!client) return;
+        const initChat = async ()=>{
+        const chats =  await ChatService.getChat()
+        setChat(chats)
+        setLoading(false)
+        }
+        
+        initChat()
+        
+        return ()=>{
+        setChat([]);
+        setLoading(true)
+        }
+    }, [client])
+  
+    const sendMessage = (destination:Account,message:Message) => {
+        if(!client || !activeConv) return
+        if(attachments){
+            attachments.forEach(async (element,index)=>{
+                    const id:string | undefined = await MediaService.saveAttachment(element);
+
+                    if(id && user){
+                        let messagetype:MessageType ;
+                        switch(element.type){
+                            case AttachementType.IMAGE:
+                                messagetype = MessageType.IMAGE
+                                break;
+                            case AttachementType.VIDEO:
+                                messagetype = MessageType.VIDEO
+                                break;
+                            case AttachementType.AUDIO:
+                                messagetype = MessageType.AUDIO
+                                break;
+                            case AttachementType.DOCUMENT:
+                                messagetype = MessageType.DOCUMENT
                         }
-                </div>
+                        const attachmentMsg = {body:id,seen:false,sentAt:new Date(),owner:user.username,type:messagetype}
+                        ChatService.sendMessage(destination.username,attachmentMsg,client)
+                        updateChat(destination,attachmentMsg)
+                    }
+            })
+            setAttachments(null)
+            
+        }
+        if(message.body.length > 0){
+            ChatService.sendMessage(destination.username,message,client);
+            updateChat(destination,message)
+        }
+        
+    }
 
-        </div>
+    const updateChat = (destination:Account,message:Message)=>{
+        if(!client || !activeConv) return
+        setChat(prev =>
+            prev?.map(conv =>
+                conv.contact.username === destination.username
+                ? { ...conv, messages: [...conv.messages, message] }
+                : conv
+            ) || null
+            );
+
+        setActiveConv({contact:destination,messages:[...activeConv.messages,message]})
+    }
+
+
+    const openConversation = (contact:Account)=>{
+        const selectedConvo:Conversation | undefined = chat?.filter((convo:Conversation)=>(convo.contact.username == contact.username))[0] 
+        if(!selectedConvo){
+            setActiveConv({contact:contact,messages:[]})
+            closePopup()
+            return
+        }
+        setActiveConv(selectedConvo);
+        closePopup()
+    }
+
+
+    const contextValue:ChatContextType = {
+        openConversation,
+        sendMessage,
+        activeConv,
+        chat,
+        attachments,
+        setAttachments
+
+
+    }
+
+    if(loading) return <>Loading</>
+    return <ChatContext.Provider value={contextValue}>
+            <ChatView />
+        </ChatContext.Provider>
+}
+
+export const useChat= ()=>{
+    const context = useContext(ChatContext);
+    if(!context)throw Error("Can't use useChatContext outside of the Chat component")
+    return context;
 }

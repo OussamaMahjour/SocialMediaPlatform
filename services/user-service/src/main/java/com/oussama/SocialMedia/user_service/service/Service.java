@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -101,5 +102,13 @@ public class Service implements ServiceInterface {
         repository.save(user);
         return mapper.UserToUserResponseDTO(user);
 
+    }
+
+    public List<UserResponseDTO> getUsersByPrefix(String prefix){
+        if(prefix.isEmpty()){
+            return new ArrayList<>();
+        }
+        List<User> users = repository.findByUsernameStartingWith(prefix);
+        return users.stream().map(mapper::UserToUserResponseDTO).toList();
     }
 }

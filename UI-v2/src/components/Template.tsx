@@ -3,11 +3,13 @@ import { useTheme } from "../services/providers/ThemeProvider";
 import { useAuth } from "../services/providers/AuthProvider";
 import { useNavigate } from "react-router-dom";
 import ThemeButton from "./ui/ThemeButton";
+import mediaApi from "../services/api/media";
 
 export default function Template({children}:{children:ReactNode}){
     const {theme} = useTheme()
     const {user} = useAuth()
     const navigate = useNavigate();
+    if(!user)return 
     return <div className="h-full w-full  flex flex-col">
                 <div className="h-15 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark w-full flex justify-between px-4 items-center  border-b border-border-light dark:border-border-dark ">
                     <div onClick={()=>{navigate("/")}} className="flex items-center  justify-center cursor-pointer">
@@ -23,7 +25,7 @@ export default function Template({children}:{children:ReactNode}){
                             <i className="fa-solid fa-bell"></i>
                         </button>
                         <button className="aspect-square rounded-full overflow-hidden cursor-pointer h-full">
-                            <img className="h-full w-full" src={`http://localhost:8080/api/v1/media/${user?.profilePictureId}`}  />
+                            <img className="h-full w-full" src={mediaApi.getFileSrc(user.profilePictureId)}  />
                         </button>
                     </div>
                 </div>

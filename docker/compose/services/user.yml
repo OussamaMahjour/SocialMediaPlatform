@@ -22,7 +22,7 @@ services:
       - DISCOVERY_SERVICE_URL=http://discovery-service:8080/eureka
       - CONFIG_SERVICE_URL=http://config-service:8080
     depends_on:
-      - gateway
+#      - gateway
       - user-db
 
   user-db:

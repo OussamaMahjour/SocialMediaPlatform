@@ -7,7 +7,7 @@ import Conversation from "../entities/chat/Conversation";
 import Account from "../entities/user/Account";
 
 const ChatService = {
-    initialSocketConnnection:async (onMessage:(message:string)=>void)=>{
+    initialSocketConnnection:async (onMessage:(message:Message)=>void)=>{
         const token = authApi.getJWTToken()
         const user = await UserService.getLoggedUser();
         const stompClient = chatApi.getChatStompClient(token);
@@ -15,7 +15,8 @@ const ChatService = {
             console.log("connected to chat socket")
             if(stompClient.connected){
                 stompClient.subscribe(`/queue/message/${user?.username}`,(message)=>{
-                    onMessage(message.body)
+                    const msg:Message = JSON.parse(message.body)
+                    onMessage(msg)
                 })
             }
         }
@@ -49,14 +50,19 @@ const ChatService = {
         const convos:Conversation[] = []
         for(let i = 0;i<chats.length;i++){
             const contact = await UserService.getUser(chats[i].username);
+            chats[i].messages.forEach((message,index)=>{
+                chats[i].messages[index].sentAt = new Date(message.sentAt);
+            })
             if(contact)convos.push({contact:contact as Account,messages:chats[i].messages})
+            
         }
         return convos;
     },
     getLastMessage: (convo:Conversation)=>{
         convo.messages.sort((e1,e2)=>(new Date(e1.sentAt).getDate() - new Date(e2.sentAt).getDate()))
         return convo.messages[convo.messages.length-1]
-    }
+    },
+    
 
 }
 

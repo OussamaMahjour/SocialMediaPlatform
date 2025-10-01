@@ -22,4 +22,6 @@ public interface Repository extends JpaRepository<User, Long> {
     @Query(value = "UPDATE User u SET u.username=:username  WHERE u.email = :email")
     @Transactional
     User updateUsernameByEmail(@Param("status") String username,@Param("email") String email);
+
+    List<User> findByUsernameStartingWith(String username);
 }

@@ -68,5 +68,10 @@ public class Controller {
         return ResponseEntity.ok(userService.updateProfilePicture(username,fileRequestDto.getMedias()));
     }
 
+    @GetMapping("/search/{prefix}")
+    public ResponseEntity<List<UserResponseDTO>> getUsersByPrefix(@PathVariable String prefix) {
+        return ResponseEntity.ok(userService.getUsersByPrefix(prefix));
+    }
+
 
 }
