@@ -22,7 +22,6 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 @Slf4j
 @RestController
 @RequestMapping("api/v1/media")
-@CrossOrigin(origins = "*")
 public class MediaController {
     @Autowired
     private MediaService mediaService;

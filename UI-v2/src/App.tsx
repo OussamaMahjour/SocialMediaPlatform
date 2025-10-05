@@ -15,16 +15,17 @@ function App() {
       path:"/ui",
       element:<UI/>
     },
-    {
-      path:"/chat",
-      element:<Template> <Chat /> </Template>
-    },
+    
   ]
 
   const authenticatedRoutes = [
     {
       path:"/",
       element:<Home />
+    },
+    {
+      path:"/chat",
+      element: <Chat /> 
     },
     
   ]

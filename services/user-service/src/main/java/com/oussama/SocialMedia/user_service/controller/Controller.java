@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api/v1/users")
-@CrossOrigin(origins = "*")
 public class Controller {
     private ServiceInterface userService;
 

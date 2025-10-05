@@ -66,7 +66,7 @@ const ContactMessage = forwardRef<HTMLDivElement,{message:Message}>(({message},r
 
 
     return <div ref={ref} onMouseEnter={(e)=>{setVisible(true)}} onMouseLeave={()=>setVisible(false)} className="w-full flex justify-start items-center gap-3 ">
-        <p  className={`text-sm text-border-dark dark:text-border-light ${visible?"":"invisible"}`}>{message.sentAt.toLocaleTimeString()}</p>
+        
         <div className=" rounded-2xl  max-w-60 overflow-hidden">{
             message.type == MessageType.TEXT?
                     <h1 className="dark:bg-accent-light bg-accent-dark dark:text-text-light text-text-dark px-3 py-2">{message.body}</h1>:
@@ -87,6 +87,7 @@ const ContactMessage = forwardRef<HTMLDivElement,{message:Message}>(({message},r
             <></>
         }
         </div>
+        <p  className={`text-sm text-border-dark dark:text-border-light ${visible?"":"invisible"}`}>{message.sentAt.toLocaleTimeString()}</p>
     </div>
 })
 

@@ -1,6 +1,6 @@
 import User from "../../entities/user/User";
 
-const BASE_URL = "http://localhost:8083/api/v1/users"
+const BASE_URL = "http://localhost:8080/api/v1/users"
 
 
 export const userApi = {
@@ -57,8 +57,12 @@ export const userApi = {
         })
         return response.json()
     },
-    getUsersByPrefix:async (prefix:string)=>{
-        let response = await fetch(`${BASE_URL}/search/${prefix}`)
+    getUsersByPrefix:async (prefix:string,token:string)=>{
+        let response = await fetch(`${BASE_URL}/search/${prefix}`,{
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
         return response.json()
     }
 

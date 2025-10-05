@@ -4,17 +4,15 @@ import { userApi } from "./api/users";
 
 const UserService = {
     getLoggedUser: async ()=>{
-        // let token = localStorage.getItem("token");
-        // if(!token)return null
-        // try{
-        //     let user:User = await userApi.getUserFromToken(token);
-        //     return user
-        // }catch(e){
-        //     console.warn("error on user service",e)
-        // }   
-        return {
-            username:"os11"
-        }
+        let token = localStorage.getItem("token");
+        if(!token)return null
+        try{
+            let user:User = await userApi.getUserFromToken(token);
+            return user
+        }catch(e){
+            console.warn("error on user service",e)
+        }   
+        
     },
     getUser: async (username:string)=>{
         let token = localStorage.getItem("token");
@@ -28,7 +26,9 @@ const UserService = {
         
     },
     search:async (prefix:string)=>{
-        const users:Account[] = await userApi.getUsersByPrefix(prefix);
+        let token = localStorage.getItem("token");
+        if(!token)return null
+        const users:Account[] = await userApi.getUsersByPrefix(prefix,token);
         return users;
     }
 }
