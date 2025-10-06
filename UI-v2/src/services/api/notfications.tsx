@@ -1,4 +1,5 @@
 import { Client } from "@stomp/stompjs"
+import Account from "../../entities/user/Account";
 
 
 const BASE_URL = "http://localhost:8080/api/v1/notification"
@@ -11,6 +12,16 @@ const NotificationApi = {
             brokerURL:`${BASE_URL}/?token=${token}`
         })
         return stompClient;
+    },
+    getNotfications:(username:string,token:string)=>{
+
+    },
+    sendNotifiction:(notfication:Notification,destination:Account,client:Client)=>{
+        if(client.connected){
+            if('message' in notfication){
+                
+            }
+        }
     }
 
     
