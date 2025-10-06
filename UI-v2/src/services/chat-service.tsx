@@ -10,18 +10,17 @@ const ChatService = {
     initialSocketConnnection:async (onMessage:(message:Message)=>void)=>{
         const token = authApi.getJWTToken()
         const user = await UserService.getLoggedUser();
-        const stompClient = chatApi.getChatStompClient(token);
-        stompClient.onConnect = ()=>{
-            console.log("connected to chat socket")
-            if(stompClient.connected){
-                stompClient.subscribe(`/queue/message/${user?.username}`,(message)=>{
-                    const msg:Message = JSON.parse(message.body)
+        const client:Client = chatApi.getChatStompClient(token);
+        client.onConnect = ()=>{
+            if(client.connected){
+                 client.subscribe(`/queue/message/${user?.username}`,(message)=>{
+                    const msg:Message = ChatService.formatMessage(message.body)
                     onMessage(msg)
-                })
+                },{id:"chat-sub"})
             }
         }
-        stompClient.activate()
-        return stompClient;
+        client.activate()
+        return client;
     },
 
     cleanConnection:(stompClient:Client | null)=>{
@@ -51,7 +50,7 @@ const ChatService = {
         for(let i = 0;i<chats.length;i++){
             const contact = await UserService.getUser(chats[i].username);
             chats[i].messages.forEach((message,index)=>{
-                chats[i].messages[index].sentAt = new Date(message.sentAt);
+                chats[i].messages[index] =  ChatService.formatMessage(message);
             })
             if(contact)convos.push({contact:contact as Account,messages:chats[i].messages})
             
@@ -62,6 +61,18 @@ const ChatService = {
         convo.messages.sort((e1,e2)=>(new Date(e1.sentAt).getDate() - new Date(e2.sentAt).getDate()))
         return convo.messages[convo.messages.length-1]
     },
+
+    formatMessage(json:string | Message){
+        let message:Message ;
+        if(typeof(json) == "string"){
+            message = JSON.parse(json)
+        }else{
+            message= json
+        }
+      
+        message.sentAt = new Date()
+        return message
+    }
     
 
 }

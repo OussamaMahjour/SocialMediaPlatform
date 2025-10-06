@@ -1,13 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import JwtToken from "../entities/auth/JwtToken";
 import LoginDetails from "../entities/auth/LoginDetails";
 import SignUpDetails from "../entities/auth/SignUpDetails";
 import authApi from "./api/auth";
 import Exception, { ExceptionType } from "../exceptions/Exception";
-import SignUp from "../pages/SignUp";
 import { usePopup } from "./providers/PopupProvider";
-import { InfoLevel } from "../components/ui/InfoPopup";
-
 
 
 type SignUpErrors = {

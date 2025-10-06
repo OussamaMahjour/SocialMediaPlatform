@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext,  useState } from "react"
+import useMount from "../../hooks/useMount";
 
 
 
@@ -15,7 +16,7 @@ export const ThemeContext = createContext<ThemeContextType | null>(null)
 export default function ThemeProvider ({children}:{children:ReactNode}){
     
     const [theme,setTheme] = useState<string | null>(()=>localStorage.getItem("theme"));
-
+    useMount("ThemeProvider")
     const toggleTheme = ()=>{
         if(theme=="light"){
             setTheme(()=>{

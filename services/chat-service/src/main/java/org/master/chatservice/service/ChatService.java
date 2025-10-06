@@ -31,6 +31,7 @@ public class ChatService {
         participants.add(username);
         participants.add(message.getOwner());
         Chat chat = chatRepository.findByParticipants(participants);
+
         if (chat == null) {
             chat = Chat.builder()
                     .id(UUID.randomUUID().toString())

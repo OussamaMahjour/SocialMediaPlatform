@@ -5,11 +5,12 @@ import { usePopup } from "../services/providers/PopupProvider";
 import Account from "../entities/user/Account";
 import Attachement, { AttachementType } from "../entities/chat/Attachement";
 import ChatView from "./chat/ChatView";
-import { Client } from "@stomp/stompjs";
+import { Client, StompSubscription } from "@stomp/stompjs";
 import Message, { MessageType } from "../entities/chat/Message";
 import MediaService from "../services/media-service";
 import { useAuth } from "../services/providers/AuthProvider";
 import UserService from "../services/user-service";
+import useMount from "../hooks/useMount";
 
 
 type ChatContextType = {
@@ -29,26 +30,28 @@ export default function Chat(){
     const {closePopup} = usePopup()
     const [attachments,setAttachments] = useState<Attachement[] | null>(null);
     const [loading,setLoading] = useState(true)
-    const [client,setClient] = useState<Client | null>(null)
+    const [client,setClient] = useState<Client | null>(null);
+    const [sub,setSub] = useState<StompSubscription | null>(null)
     const [chat,setChat] = useState<Conversation[] | null>(null);
     const {user} = useAuth();
     useEffect(()=>{
         let isMounted = true;
         const initSocket = async ()=>{
         const client = await ChatService.initialSocketConnnection(async (message)=>{
+            
             const account = await UserService.getUser(message.owner);
             if(account){
-                updateChat(account,message)
+                updateChat(account,message);
             }
             
         })
         if(isMounted)setClient(client)
-        
         }
         initSocket()
         
         return ()=>{
             isMounted = false;
+            client?.unsubscribe("chat-sub")
             client?.deactivate();
         }
     },[])
@@ -70,6 +73,17 @@ export default function Chat(){
         }
     }, [client])
   
+   useEffect(()=>{
+        if(!activeConv)return ;
+        chat?.forEach((element,index)=>{
+            if(element.contact == activeConv.contact){
+                setActiveConv({contact:element.contact,messages:element.messages})
+            }
+        })
+        
+   },[chat])
+
+
     const sendMessage = (destination:Account,message:Message) => {
         if(!client || !activeConv) return
         if(attachments){
@@ -107,7 +121,7 @@ export default function Chat(){
     }
 
     const updateChat = (destination:Account,message:Message)=>{
-        if(!client || !activeConv) return
+        
         setChat(prev =>
             prev?.map(conv =>
                 conv.contact.username === destination.username
@@ -115,8 +129,7 @@ export default function Chat(){
                 : conv
             ) || null
             );
-
-        setActiveConv({contact:destination,messages:[...activeConv.messages,message]})
+        
     }
 
 

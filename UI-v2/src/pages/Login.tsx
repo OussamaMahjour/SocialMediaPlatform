@@ -25,7 +25,9 @@ export default function Login(){
             setLoginErrors({username:error.Errors.username,password:error.Errors.password})
         
         }else{
-            navigate("/")
+            window.location.href = "/"
+
+          
         }
         
         setLoading(false)

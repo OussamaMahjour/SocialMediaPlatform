@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext,  useState } from "react";
 import { createPortal } from "react-dom";
 import InfoPopup, { InfoLevel, InfoMessage } from "../../components/ui/InfoPopup";
+import useMount from "../../hooks/useMount";
 
 
 
@@ -18,7 +19,7 @@ const PopupContext = createContext<PopupContextType | null>(null);
 export default function PopupProvider({children}:{children:ReactNode}){
     const [popup,setPopup] = useState<ReactNode | null>(null);
     const [infoMsg,setInfoMessage] = useState<InfoMessage>({message:"",level:InfoLevel.GENERAL});
-    
+    useMount("PopupProvider")
     const openPopup = (content:ReactNode,onClose?:()=>void)=>{
         setPopup(content);
         if(onClose)onClose();

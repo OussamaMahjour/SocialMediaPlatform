@@ -7,9 +7,10 @@ import SignUp from './pages/SignUp'
 import UI from './pages/UI'
 import routerUtils from './utils/routerUtils'
 import Template from './components/Template'
+import useMount from './hooks/useMount'
 
 function App() {
-
+  useMount("App")
   const publicRoutes = [
     {
       path:"/ui",

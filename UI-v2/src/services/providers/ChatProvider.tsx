@@ -7,4 +7,3 @@ type ChatContextType = {
 const ChatContext = createContext<ChatContextType | null>(null);
 
 
-const ChatProvider

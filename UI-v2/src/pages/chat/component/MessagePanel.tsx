@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Attachement, { AttachementType } from "../../../entities/chat/Attachement"
 import Button from "../../../components/ui/Button"
 import Input from "../../../components/ui/Input"
@@ -65,6 +65,8 @@ const MessagePanel = ()=>{
     }
     
     
+    
+    
     return <div className="h-20  w-full flex p-3 py-4 gap-1 border-t dark:border-border-dark border-border-light ">
                
                 <div className="relative w-fit h-fit">
@@ -111,8 +113,17 @@ const MessagePanel = ()=>{
                         <i className="fa-solid fa-paperclip"></i>
                     </Button>
                 </div>
-                <Input value={message} autoFocus id="message" onChange={(e)=>{setMessage(e.target.value)}} placeholder="Write something..." className="p-3 focus:outline-hidden dark:border-border-dark dark:focus:border-border-light focus:border-border-dark flex-1 h-full border border-border-light rounded  text-text-light dark:text-text-dark"/>
-                <ButtonInverse className="h-full aspect-square  text-xl  " 
+                <Input
+                onKeyDown={(e)=>{
+                    if(e.key ==="Enter"){
+                        document.getElementById("sendMessage")?.click();
+                    }
+                }}
+                
+                
+                value={message} autoFocus id="message" onChange={(e)=>{setMessage(e.target.value)}} placeholder="Write something..." className="p-3 focus:outline-hidden dark:border-border-dark dark:focus:border-border-light focus:border-border-dark flex-1 h-full border border-border-light rounded  text-text-light dark:text-text-dark"/>
+                <ButtonInverse id="sendMessage" className="h-full aspect-square  text-xl  " 
+                   
                     onClick={()=>{
                             if (activeConv && user) {
                                

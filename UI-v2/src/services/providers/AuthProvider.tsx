@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import User from "../../entities/user/User";
 import UserService from "../user-service";
 import { useTheme } from "./ThemeProvider";
+import useMount from "../../hooks/useMount";
 
 
 type AuthContextType = {
@@ -15,8 +16,9 @@ export default function AuthProvider({children}:{children:ReactNode}){
     const [user,setUser] = useState<User | null>(null)
     const [loading,setLoading] = useState(true)
     const {theme} = useTheme();
-
+    useMount("AuthProvider")
     useEffect(()=>{
+        console.log("test")
         const initialUser = async ()=>{
             const loggedUser = await UserService.getLoggedUser();
             if(loggedUser){
