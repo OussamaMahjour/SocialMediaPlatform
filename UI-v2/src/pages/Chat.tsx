@@ -35,6 +35,7 @@ export default function Chat(){
     const [chat,setChat] = useState<Conversation[] | null>(null);
     const {user} = useAuth();
     useEffect(()=>{
+       
         let isMounted = true;
         const initSocket = async ()=>{
         const client = await ChatService.initialSocketConnnection(async (message)=>{

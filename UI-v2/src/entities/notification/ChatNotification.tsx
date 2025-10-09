@@ -1,3 +1,5 @@
+import Notification from "./Notification";
+
 interface ChatNotification extends Notification {
     senderUsername:string;
     recipientUsername:string;

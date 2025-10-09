@@ -236,13 +236,6 @@ const CallProvider = ({target,initCall}:{target:Contact,initCall:boolean}) =>{
             }
             sendNotifification(target,notification)
             setCallStatus(CallStatus.RINGING)
-       
-       
-        
-
-        
-
-   
     }
 
 

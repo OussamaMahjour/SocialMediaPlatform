@@ -18,7 +18,6 @@ export default function AuthProvider({children}:{children:ReactNode}){
     const {theme} = useTheme();
     useMount("AuthProvider")
     useEffect(()=>{
-        console.log("test")
         const initialUser = async ()=>{
             const loggedUser = await UserService.getLoggedUser();
             if(loggedUser){

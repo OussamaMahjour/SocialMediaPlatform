@@ -9,7 +9,7 @@ const ContactView = ({contact,lastMessage,onClick}:{contact:Account,lastMessage:
     
 
     return <div onClick={onClick} className="w-full flex items-center px-5 py-3 cursor-pointer">
-        <img className="w-14 aspect-square rounded-full" src={mediaApi.getFileSrc(contact.profileId)}/>
+        <img className="w-14 aspect-square rounded-full" src={mediaApi.getFileSrc(contact.profilePictureId)}/>
         <div className="flex flex-1 flex-col p-3 gap-1">
             
             <h1 className="text-text-light dark:text-text-dark ">{contact.username}</h1>

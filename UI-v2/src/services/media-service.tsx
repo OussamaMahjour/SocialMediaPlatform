@@ -11,6 +11,15 @@ const MediaService = {
         }catch(e){
             console.warn(e)
         }
+    },
+    saveFile:async (file:File)=> {
+        try{
+            const token:string = authApi.getJWTToken();
+            const ids:string[] = await mediaApi.uploadFile(file,token);
+            return ids[0];
+        }catch(e){
+            console.warn(e)
+        }
     }
 }
 

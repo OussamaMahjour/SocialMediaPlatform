@@ -37,14 +37,14 @@ const ChatView = ()=>{
                             {activeConv?<>
                             <div className="h-18 w-full border-b border-border-light dark:border-border-dark p-4 flex items-center justify-between gap-3">
                                 <div className="flex-1 flex gap-5"> 
-                                    <img className="w-14 aspect-square rounded-full" src={mediaApi.getFileSrc(activeConv.contact.profileId)}/>
+                                    <img className="w-14 aspect-square rounded-full" src={mediaApi.getFileSrc(activeConv.contact.profilePictureId)}/>
                                     <div className="">
                                         <h1 className="text-xl font-semibold text-text-light dark:text-text-dark">{activeConv.contact.username}</h1>
                                         <p>{activeConv.contact.isOnline?"online":activeConv.contact.lastOnline?.getDate()}</p>
                                     </div>
                                 </div>
-                                <VideoCallButton />
-                                <VoiceCallButton />
+                                <VideoCallButton contact={activeConv.contact}/>
+                                <VoiceCallButton contact={activeConv.contact}/>
                             </div>
                             {attachments?
                             <AttachmenstView />

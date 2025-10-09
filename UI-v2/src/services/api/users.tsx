@@ -57,6 +57,7 @@ export const userApi = {
         })
         return response.json()
     },
+    
     getUsersByPrefix:async (prefix:string,token:string)=>{
         let response = await fetch(`${BASE_URL}/search/${prefix}`,{
             headers: {

@@ -22,7 +22,7 @@ const ChatService = {
         client.activate()
         return client;
     },
-
+    
     cleanConnection:(stompClient:Client | null)=>{
         if(stompClient){
             stompClient.deactivate;
@@ -45,6 +45,7 @@ const ChatService = {
     getChat:async ()=>{
         const token = authApi.getJWTToken()
         const user = await UserService.getLoggedUser();
+        if(!user)return;
         const chats:{username:string,messages:Message[]}[] = await chatApi.getChats(user.username,token);
         const convos:Conversation[] = []
         for(let i = 0;i<chats.length;i++){
@@ -69,8 +70,8 @@ const ChatService = {
         }else{
             message= json
         }
-      
-        message.sentAt = new Date()
+       
+        message.sentAt = new Date(message.sentAt)
         return message
     }
     

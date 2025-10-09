@@ -1,6 +1,6 @@
 type Account = {
     username:string;
-    profileId:string;
+    profilePictureId:string;
     isOnline?:boolean;
     lastOnline?:Date;
 }

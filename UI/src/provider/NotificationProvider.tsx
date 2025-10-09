@@ -3,8 +3,7 @@ import Contact from "../types/Contact"
 import { Client } from "@stomp/stompjs";
 import { useAuth } from "./AuthProvider";
 import Notification, { NotificationType } from "../types/Notification";
-import { useTheme } from "./ThemeProvider";
-import RingingCall from "../Pages/Chat/component/RingingCall";
+
 import ChatNotification from "../types/ChatNotification";
 import CallProvider from "./CallProvider";
 
