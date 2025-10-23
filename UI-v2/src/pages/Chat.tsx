@@ -122,7 +122,9 @@ export default function Chat(){
     }
 
     const updateChat = (destination:Account,message:Message)=>{
-        
+        if(destination){
+            console.log("destination set")
+        }
         setChat(prev =>
             prev?.map(conv =>
                 conv.contact.username === destination.username
