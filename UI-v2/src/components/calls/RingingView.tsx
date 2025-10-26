@@ -1,5 +1,5 @@
 import Account from "../../entities/user/Account";
-import { CallType,useCall} from "../../services/providers/CallProvider";
+import { CallType,useCall} from "../../services/providers/CallProvider2";
 import Card from "../ui/Card";
 import Img from "../ui/Img";
 

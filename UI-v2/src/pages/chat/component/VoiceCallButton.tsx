@@ -3,7 +3,7 @@ import { NotificationType } from "../../../entities/notification/Notification";
 import Account from "../../../entities/user/Account";
 import CallService from "../../../services/call-service";
 import { useAuth } from "../../../services/providers/AuthProvider";
-import CallProvider from "../../../services/providers/CallProvider";
+import CallProvider from "../../../services/providers/CallProvider2";
 import { useNotification } from "../../../services/providers/NotificationProvider";
 import { usePopup } from "../../../services/providers/PopupProvider";
 

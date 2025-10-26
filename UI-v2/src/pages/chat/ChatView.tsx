@@ -16,10 +16,10 @@ const ChatView = ()=>{
     const {openPopup} = usePopup()
 
 
-    return <div className="w-full h-full bg-background-light dark:bg-background-dark flex ">
+    return <div className="w-full h-full bg-background-light dark:bg-background-dark flex text-text-light dark:text-text-dark">
                     <div className="w-2/6 h-full min-w-100 max-w-140 border-r border-border-light dark:border-border-dark flex flex-col">
                         <div className=" h-18 w-full border-b border-border-light dark:border-border-dark p-4 flex items-center justify-between">
-                            <h1 className="text-xl font-semibold ">Messages</h1>
+                            <h1 className="text-xl  font-semibold ">Messages</h1>
                             <Card className="shadow-none border-none *:cursor-pointer">
                                 <button  className="text-xl px-2 py-1 " 
                                 onClick={()=>openPopup(<ContactSearch onContactSelect={openConversation}></ContactSearch>)}>

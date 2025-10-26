@@ -7,7 +7,6 @@ import PopupProvider from './services/providers/PopupProvider.tsx'
 import AuthProvider from './services/providers/AuthProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <ThemeProvider>
       <AuthProvider>
         <PopupProvider>
@@ -15,5 +14,4 @@ createRoot(document.getElementById('root')!).render(
         </PopupProvider>
       </AuthProvider>
     </ThemeProvider>
-  </StrictMode>,
 )

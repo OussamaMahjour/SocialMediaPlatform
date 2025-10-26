@@ -7,7 +7,7 @@ import UserService from "../user-service";
 import ChatNotification, { ChatNotificationType } from "../../entities/notification/ChatNotification";
 import CallService from "../call-service";
 import { usePopup } from "./PopupProvider";
-import CallProvider from "./CallProvider";
+import CallProvider from "./CallProvider2";
 
 
 type NotificationContextType = {

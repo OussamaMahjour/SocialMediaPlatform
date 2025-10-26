@@ -17,16 +17,24 @@ const CallService = {
             const user = await UserService.getLoggedUser();
             const client:Client = chatApi.getChatStompClient(token);
             const pc =  new RTCPeerConnection();
+
             client.onConnect = ()=>{
                 if(client.connected){
                     console.log("connected to call socket")
                     client.subscribe(`/queue/call/${user?.username}`,async (message)=>{
                         console.log("getting msg ",message.body)
                         const rtcMessage:RTCMessage = JSON.parse(message.body);
+                        
                         switch(rtcMessage.messageType){
                             case RTCMessageType.CREAT_OFFER:
+                                console.log("Offer case ");
                                 if (rtcMessage.sdp?.type === "offer") {
-                                    await pc.setRemoteDescription(rtcMessage.sdp);
+                                    
+                                    pc.setRemoteDescription(rtcMessage.sdp)
+                                    .then(()=>navigator.mediaDevices.getUserMedia({audio:true,video:true}))
+                                    .then(()=>{
+                                        if(onOffer)onOffer()
+                                    });
                                     const answer = await pc.createAnswer();
                                     try{
                                         
@@ -34,8 +42,6 @@ const CallService = {
 
                                     }catch(e){
                                     }
-                   
-                                    console.log("localDescription is ",pc.localDescription)
                                     
                                     if(client.connected){
                                          client.publish({
@@ -54,21 +60,18 @@ const CallService = {
                                 break;
 
                             case RTCMessageType.CREAT_ANSWER:
-                            
-                                console.log("creating answer",rtcMessage.sdp)
                                 try{
-                                    if(onAnswer)onAnswer()
-                                    await pc.setRemoteDescription(rtcMessage.sdp);
+                                    pc.setRemoteDescription(rtcMessage.sdp).then(()=>{
+                                        if(onAnswer)onAnswer()
+                                        })
                                     
                                 }catch(e){
 
                                 }
                                 break;
                             case RTCMessageType.ICE_CONDIDATE:
-                                
-                                console.log("received ice candidate ",rtcMessage.candidate)
+                                console.log("Ice Condidate case ");
                                 pc.addIceCandidate(rtcMessage.candidate);
-                                
                                 break;
                         }
                     },{id:"call-sub"})
@@ -84,8 +87,19 @@ const CallService = {
             const user = await UserService.getLoggedUser();
             
             
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
+            pc.createOffer().then((offer)=>{
+                pc.setLocalDescription(offer)
+            }).then(()=>{
+                client.publish({
+                    destination:`/app/call/${contact.username}`,
+                    body:JSON.stringify({
+                        sender:user?.username,
+                        messageType: RTCMessageType.CREAT_OFFER,
+                        sdp: pc.localDescription,
+                    })
+                });
+            });
+            
             pc.onicecandidate = (event)=>{
                 console.log("inside ice condidate")
                 if(event.candidate && user){
@@ -101,14 +115,7 @@ const CallService = {
                     }
                 }
             
-            client.publish({
-                destination:`/app/call/${contact.username}`,
-                body:JSON.stringify({
-                    sender:user?.username,
-                    messageType: RTCMessageType.CREAT_OFFER,
-                    sdp: pc.localDescription,
-                })
-            });
+            
         },
         
 }
