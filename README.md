@@ -24,6 +24,7 @@ A learning-focused implementation featuring:
 **Implemented:**
 - **User Service**: Account management & profiles
 - **![Auth Service](services/auth-service/README.md)**: Users Registration and JWT token generation
+-  **![Chat Service](servies/chat-service/README.md)**:Message and Video/Voice calls
 - **Post Service**: Content creation & management
 - **Config Service**: Centralized configuration
 - **Discovery Service**: Service registration

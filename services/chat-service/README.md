@@ -1,4 +1,4 @@
-# Chat Service
+c# Chat Service
 
 The **Chat Service** is a Spring Boot microservice responsible for handling chat messaging and Voice/Video Calls in the **Social Media Platform**. 
 
@@ -19,6 +19,7 @@ The **Chat Service** is a Spring Boot microservice responsible for handling chat
 * **Web RTC**
 * **Lombok**
 
+![Architecture Diagram](shema.png)
 
 ---
 
