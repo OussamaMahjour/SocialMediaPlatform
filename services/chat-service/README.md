@@ -19,6 +19,9 @@ The **Chat Service** is a Spring Boot microservice responsible for handling chat
 * **Web RTC**
 * **Lombok**
 
+---
+
+## 📌 Overview
 
 ![Architecture Diagram](shema.png)
 
